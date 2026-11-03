@@ -1,0 +1,27 @@
+name: Ingest filings
+# Daily so new 10-Ks and 10-Qs get picked up. Filings already indexed are
+# skipped, so a run with nothing new only checks SEC and exits.
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      tickers: { description: 'Comma-separated tickers (default: all)', required: false }
+      max_chunks: { description: 'Most passages to embed this run', required: false, default: '2500' }
+permissions:
+  contents: read
+concurrency: reed-data
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scripts/ingest.mjs --max-chunks "${MAX_CHUNKS:-2500}" ${TICKERS:+--tickers "$TICKERS"}
+        env:
+          MAX_CHUNKS: ${{ inputs.max_chunks }}
+          TICKERS: ${{ inputs.tickers }}

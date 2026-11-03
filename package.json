@@ -1,0 +1,17 @@
+{
+  "name": "reed",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "dev": "wrangler dev",
+    "setup": "node scripts/setup.mjs",
+    "ingest": "node scripts/ingest.mjs",
+    "daily": "node scripts/daily.mjs",
+    "eval": "node scripts/eval.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.40.0"
+  },
+  "engines": { "node": ">=22" }
+}

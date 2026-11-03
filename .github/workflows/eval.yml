@@ -1,0 +1,26 @@
+name: Evaluate
+on:
+  workflow_dispatch:
+    inputs:
+      set: { description: 'Event set', required: false, default: 'eval/events.draft.jsonl' }
+      limit: { description: 'Only the first N events', required: false }
+permissions:
+  contents: read
+concurrency: reed-data
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scripts/eval.mjs --set "${SET:-eval/events.draft.jsonl}" ${LIMIT:+--limit "$LIMIT"}
+        env:
+          SET: ${{ inputs.set }}
+          LIMIT: ${{ inputs.limit }}
+      - uses: actions/upload-artifact@v4
+        with: { name: eval-results, path: out/ }
+      - run: cat out/eval-report.md >> "$GITHUB_STEP_SUMMARY"

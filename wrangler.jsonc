@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "reed",
+  "main": "src/worker.js",
+  "compatibility_date": "2025-10-01",
+  // Serves muscoota.com/reed. The main site Worker keeps everything else.
+  "routes": [
+    { "pattern": "muscoota.com/reed", "zone_name": "muscoota.com" },
+    { "pattern": "muscoota.com/reed/*", "zone_name": "muscoota.com" }
+  ],
+  "workers_dev": true,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "reed",
+      // Filled in by scripts/setup.mjs during deploy.
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "observability": { "enabled": true }
+}
