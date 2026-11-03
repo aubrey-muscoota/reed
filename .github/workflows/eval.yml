@@ -4,6 +4,7 @@ on:
     inputs:
       set: { description: 'Event set', required: false, default: 'eval/events.draft.jsonl' }
       limit: { description: 'Only the first N events', required: false }
+      check_only: { description: 'Only check the set against 10-K text (no models)', type: boolean, default: false }
 permissions:
   contents: read
 concurrency: reed-data
@@ -17,10 +18,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: node scripts/eval.mjs --set "${SET:-eval/events.draft.jsonl}" ${LIMIT:+--limit "$LIMIT"}
+      - if: ${{ inputs.check_only }}
+        run: node scripts/check-set.mjs --set "${SET:-eval/events.draft.jsonl}" | tee -a "$GITHUB_STEP_SUMMARY"
+        env:
+          SET: ${{ inputs.set }}
+      - if: ${{ !inputs.check_only }}
+        run: node scripts/eval.mjs --set "${SET:-eval/events.draft.jsonl}" ${LIMIT:+--limit "$LIMIT"}
         env:
           SET: ${{ inputs.set }}
           LIMIT: ${{ inputs.limit }}
-      - uses: actions/upload-artifact@v4
+      - if: ${{ !inputs.check_only }}
+        uses: actions/upload-artifact@v4
         with: { name: eval-results, path: out/ }
-      - run: cat out/eval-report.md >> "$GITHUB_STEP_SUMMARY"
+      - if: ${{ !inputs.check_only }}
+        run: cat out/eval-report.md >> "$GITHUB_STEP_SUMMARY"
