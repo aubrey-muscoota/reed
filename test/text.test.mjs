@@ -64,3 +64,17 @@ test('extractSection falls back to a bare Risk Factors heading', () => {
   assert.ok(s.includes('Risk paragraph 79'));
   assert.ok(!s.includes('None.'));
 });
+
+test('extractSection uses repeated "Item 1A" page headers when the heading is odd', () => {
+  const t = `Item 1A.\n\nRisk Factors\n\n14\n\nItem 1B.\n\nUnresolved\n\nPart I\nItem 1A\n${body}\nPart I\nItem 1A\nMore risks.\nItem 1B. Unresolved Staff Comments\nNone.`;
+  const s = extractSection(t);
+  assert.ok(s.includes('Risk paragraph 79') && s.includes('More risks.'));
+  assert.ok(!s.includes('None.'));
+});
+
+test('extractSection accepts an inline "Risk Factors." heading', () => {
+  const t = `Cybersecurity\n23\nRisk factors\n24\nLegal proceedings\n31\nRisk factors. The following discussion covers risks.\n${body}\nLegal proceedings\nNone.`;
+  const s = extractSection(t);
+  assert.ok(s.startsWith('Risk factors. The following'));
+  assert.ok(!s.includes('None.'));
+});
