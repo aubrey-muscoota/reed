@@ -36,8 +36,8 @@ const lengths = [...text].map(([t, b]) => [t, b.length]).sort((a, b) => a[1] - b
 out.push(`Shortest extractions (characters): ${lengths.slice(0, 25).map(([t, n]) => `${t} ${n}`).join(', ')}\n`);
 for (const [t] of lengths.filter(([, n]) => n < 3000)) {
   const raw = (rawText.get(t) ?? '').toLowerCase();
-  const ctx = [...raw.matchAll(/risk factors/g)].slice(0, 8).map(m => JSON.stringify(raw.slice(Math.max(0, m.index - 60), m.index + 80)));
-  out.push(`${t} "risk factors" contexts:\n${ctx.map(c => `  ${c}`).join('\n')}\n`);
+  const ctx = [...raw.matchAll(/(?:^|\n)[ \t]*item\s*1[ab]/g)].slice(0, 10).map(m => JSON.stringify(raw.slice(Math.max(0, m.index - 60), m.index + 80)));
+  out.push(`${t} "item 1a/1b" line contexts:\n${ctx.map(c => `  ${c}`).join('\n')}\n`);
 }
 for (const e of events) {
   const res = (e.terms ?? []).map(s => new RegExp(s, 'g'));
