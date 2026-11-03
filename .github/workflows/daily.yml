@@ -1,0 +1,25 @@
+name: Daily events
+on:
+  schedule:
+    - cron: '0 14 * * 1-5'   # weekdays, after the Federal Register posts
+  workflow_dispatch:
+    inputs:
+      since: { description: 'Start date YYYY-MM-DD (default: 3 days ago)', required: false }
+      max: { description: 'Most events to tag', required: false, default: '8' }
+permissions:
+  contents: read
+concurrency: reed-data
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scripts/daily.mjs ${SINCE:+--since "$SINCE"} --max "${MAX:-8}"
+        env:
+          SINCE: ${{ inputs.since }}
+          MAX: ${{ inputs.max }}
