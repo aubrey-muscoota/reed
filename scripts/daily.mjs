@@ -8,18 +8,26 @@ import { cloudflare } from '../lib/cf.mjs';
 import { CONFIG } from '../lib/config.mjs';
 import { d1Id, db as openDb } from '../lib/db.mjs';
 import { recentEvents } from '../lib/fedreg.mjs';
-import { tagEvent, retrieve, explain } from '../lib/pipeline.mjs';
+import { tagEvent, retrieve, explain, checkSpecific } from '../lib/pipeline.mjs';
 
 const { values: args } = parseArgs({
   options: {
     since: { type: 'string' },
     max: { type: 'string', default: String(CONFIG.maxEventsPerDay) },
+    // Clear tags and notes for events in the window and redo them.
+    reprocess: { type: 'boolean', default: false },
   },
 });
 
 const since = args.since ?? new Date(Date.now() - 3 * 864e5).toISOString().slice(0, 10);
 const cf = cloudflare();
 const db = openDb(cf, await d1Id(cf));
+
+if (args.reprocess) {
+  await db.all('DELETE FROM notes WHERE event_id IN (SELECT id FROM events WHERE published >= ?)', [since]);
+  await db.all('UPDATE events SET processed_at = NULL, relevant = NULL WHERE published >= ?', [since]);
+  console.log(`Cleared tags and notes since ${since}`);
+}
 
 const events = await recentEvents(since);
 // "Done" means tagged. Stored-but-untagged actions (over the cap, or a
@@ -43,10 +51,10 @@ for (const e of queue) {
     const tag = await tagEvent(cf, e);
     await db.all('UPDATE events SET category = ?, keywords = ?, relevant = ?, model = ?, processed_at = ? WHERE id = ?',
       [tag.category, JSON.stringify(tag.keywords), tag.relevant ? 1 : 0, CONFIG.model, new Date().toISOString(), e.id]);
-    if (!tag.relevant) { console.log(`- ${e.id} not relevant: ${e.title}`); continue; }
+    if (!tag.relevant) { console.log(`- ${e.id} ${tag.routine ? 'routine' : 'not relevant'}: ${e.title}`); continue; }
 
     const passages = await retrieve(cf, e, tag, 'dense');
-    const notes = await explain(cf, e, passages.slice(0, CONFIG.notePassages));
+    const notes = await checkSpecific(cf, e, await explain(cf, e, passages.slice(0, CONFIG.notePassages)));
     for (const n of notes) {
       await db.all('INSERT OR REPLACE INTO notes (event_id, ticker, company, summary, citations, model, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
         [e.id, n.ticker, n.company, n.summary, JSON.stringify(n.citations), CONFIG.model, new Date().toISOString()]);
