@@ -1,6 +1,6 @@
 // Compare models and retrieval setups on a hand-checked event set.
 //
-//   node scripts/eval.mjs [--set eval/events.draft.jsonl] [--models a,b] [--limit 5]
+//   node scripts/eval.mjs [--set eval/events.jsonl] [--models a,b] [--limit 5]
 //
 // For each event:
 //   tagging   - does the model's category match the expected one?
@@ -19,7 +19,7 @@ import { tagEvent, retrieveDense, rerankHybrid, explain, checkSpecific } from '.
 
 const { values: args } = parseArgs({
   options: {
-    set: { type: 'string', default: 'eval/events.draft.jsonl' },
+    set: { type: 'string', default: 'eval/events.jsonl' },
     models: { type: 'string' },
     limit: { type: 'string' },
   },

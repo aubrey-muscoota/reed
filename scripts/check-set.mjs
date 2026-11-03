@@ -3,13 +3,13 @@
 // event's terms? Lists expected companies that do not (candidates to drop)
 // and unexpected ones that do (candidates to add). A person makes the call.
 //
-//   node scripts/check-set.mjs [--set eval/events.draft.jsonl]
+//   node scripts/check-set.mjs [--set eval/events.jsonl]
 
 import { parseArgs } from 'node:util';
 import { readFile } from 'node:fs/promises';
 import { tickerMap, submissions, latestFilings, filingUrl, riskFactors, secText } from '../lib/sec.mjs';
 
-const { values: args } = parseArgs({ options: { set: { type: 'string', default: 'eval/events.draft.jsonl' } } });
+const { values: args } = parseArgs({ options: { set: { type: 'string', default: 'eval/events.jsonl' } } });
 const events = (await readFile(args.set, 'utf8')).split('\n').filter(Boolean).map(l => JSON.parse(l));
 const tickers = JSON.parse(await readFile(new URL('../data/sp100.json', import.meta.url), 'utf8')).tickers;
 

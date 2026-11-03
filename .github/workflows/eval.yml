@@ -2,7 +2,7 @@ name: Evaluate
 on:
   workflow_dispatch:
     inputs:
-      set: { description: 'Event set', required: false, default: 'eval/events.draft.jsonl' }
+      set: { description: 'Event set', required: false, default: 'eval/events.jsonl' }
       limit: { description: 'Only the first N events', required: false }
       check_only: { description: 'Only check the set against 10-K text (no models)', type: boolean, default: false }
 permissions:
@@ -19,12 +19,12 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - if: ${{ inputs.check_only }}
-        run: node scripts/check-set.mjs --set "${SET:-eval/events.draft.jsonl}" | tee -a "$GITHUB_STEP_SUMMARY"
+        run: node scripts/check-set.mjs --set "${SET:-eval/events.jsonl}" | tee -a "$GITHUB_STEP_SUMMARY"
         env:
           SET: ${{ inputs.set }}
           REED_DEBUG: '1'
       - if: ${{ !inputs.check_only }}
-        run: node scripts/eval.mjs --set "${SET:-eval/events.draft.jsonl}" ${LIMIT:+--limit "$LIMIT"}
+        run: node scripts/eval.mjs --set "${SET:-eval/events.jsonl}" ${LIMIT:+--limit "$LIMIT"}
         env:
           SET: ${{ inputs.set }}
           LIMIT: ${{ inputs.limit }}

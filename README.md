@@ -42,4 +42,4 @@ Scripts need `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` in the environme
 
 ## Evaluation set
 
-`eval/events.draft.jsonl` is a first draft of past government actions with the companies a careful reader would expect. It has not been checked against the filings yet; check each row before publishing results.
+`eval/events.jsonl` is a first draft of past government actions with the companies a careful reader would expect. It has not been checked against the filings yet; check each row before publishing results.
