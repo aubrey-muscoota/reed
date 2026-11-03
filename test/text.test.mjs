@@ -47,3 +47,20 @@ test('chunk makes overlapping passages of bounded size and keeps all text', () =
 test('chunk keeps a short section as one passage', () => {
   assert.deepEqual(chunk('just a few words'), ['just a few words']);
 });
+
+const body = Array.from({ length: 80 }, (_, i) => `Risk paragraph ${i} about export controls and supply chains in many markets.`).join('\n');
+
+test('extractSection ignores mid-sentence cross-references that run to the end', () => {
+  const t = `Item 1A. Risk Factors\nItem 1B. Unresolved Staff Comments\nItem 1. Business\nSee Item 1A. Risk Factors\nItem 1A. Risk Factors\n${body}\nItem 1B. Unresolved Staff Comments\nNone.\nItem 7. MD&A\nAs discussed in "Item 1A. Risk Factors," our results vary.\n${'Long MD&A text. '.repeat(2000)}`;
+  const s = extractSection(t);
+  assert.ok(s.startsWith('Item 1A. Risk Factors\nRisk paragraph 0'));
+  assert.ok(!s.includes('MD&A'));
+});
+
+test('extractSection falls back to a bare Risk Factors heading', () => {
+  const t = `Item 1A\nPages 37 - 51\nRisk Factors\n${body}\nUnresolved Staff Comments\nNone.`;
+  const s = extractSection(t);
+  assert.ok(s.startsWith('Risk Factors'));
+  assert.ok(s.includes('Risk paragraph 79'));
+  assert.ok(!s.includes('None.'));
+});
