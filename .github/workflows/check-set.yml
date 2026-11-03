@@ -1,0 +1,17 @@
+name: Check eval set
+on:
+  workflow_dispatch:
+    inputs:
+      set: { description: 'Event set', required: false, default: 'eval/events.draft.jsonl' }
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scripts/check-set.mjs --set "${SET:-eval/events.draft.jsonl}" | tee -a "$GITHUB_STEP_SUMMARY"
+        env:
+          SET: ${{ inputs.set }}
