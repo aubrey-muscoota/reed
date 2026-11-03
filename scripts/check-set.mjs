@@ -24,6 +24,14 @@ for (const t of tickers) {
 }
 
 const out = [`# Evaluation set check\n\n${text.size} companies' 10-K Risk Factors searched.\n`];
+// Short extractions usually mean the section was not found properly (a
+// table-of-contents line, or risk factors kept in an exhibit).
+const lengths = [...text].map(([t, b]) => [t, b.length]).sort((a, b) => a[1] - b[1]);
+out.push(`Shortest extractions (characters): ${lengths.slice(0, 25).map(([t, n]) => `${t} ${n}`).join(', ')}\n`);
+for (const t of ['NVDA', 'LLY', 'WFC', 'C', 'MS', 'INTC']) {
+  const b = text.get(t) ?? '';
+  out.push(`${t} starts: ${JSON.stringify(b.slice(0, 160))} ... ends: ${JSON.stringify(b.slice(-160))}\n`);
+}
 for (const e of events) {
   const res = (e.terms ?? []).map(s => new RegExp(s, 'g'));
   const hits = new Map();
