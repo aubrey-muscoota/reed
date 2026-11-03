@@ -63,3 +63,8 @@ test('isRoutine skips trade-remedy and procedural notices, keeps real actions', 
   assert.ok(!isRoutine({ title: 'Adjusting Imports of Robotics, Industrial Machinery, and Their Parts and Components Into the United States' }));
   assert.ok(!isRoutine({ title: 'Imposing Duties to Address the Flow of Illicit Drugs Across Our Northern Border' }));
 });
+
+test('parseJson skips reasoning in think tags', () => {
+  assert.deepEqual(parseJson('<think>maybe {"x": 1}?</think>\n{"category": "tax"}'), { category: 'tax' });
+  assert.deepEqual(parseJson('thinking about {"no": 1}...</think>{"ok": true}'), { ok: true });
+});

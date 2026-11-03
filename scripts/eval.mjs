@@ -15,7 +15,7 @@ import { parseArgs } from 'node:util';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { cloudflare, parseJson } from '../lib/cf.mjs';
 import { CONFIG } from '../lib/config.mjs';
-import { tagEvent, retrieveDense, rerankHybrid, explain } from '../lib/pipeline.mjs';
+import { tagEvent, retrieveDense, rerankHybrid, explain, checkSpecific } from '../lib/pipeline.mjs';
 
 const { values: args } = parseArgs({
   options: {
@@ -62,12 +62,18 @@ for (const e of events) {
         const notes = await explain(cf, e, top, model);
         const supported = [];
         for (const n of notes) supported.push(await judge(n));
+        // The live site only publishes notes that pass the specificity check.
+        const kept = await checkSpecific(cf, e, notes);
+        const precision = list => (list.length ? list.filter(n => e.expected.includes(n.ticker)).length / list.length : null);
         row[mode] = {
           recall: recallAt(passages, e.expected),
           notes: notes.length,
-          precision: notes.length ? notes.filter(n => e.expected.includes(n.ticker)).length / notes.length : null,
+          precision: precision(notes),
           supported: notes.length ? supported.filter(Boolean).length / notes.length : null,
+          published: kept.length,
+          publishedPrecision: precision(kept),
           tickers: notes.map(n => n.ticker),
+          publishedTickers: kept.map(n => n.ticker),
         };
       }
     } catch (err) {
@@ -90,6 +96,8 @@ for (const model of models) {
       recallAt10: mean(mine.map(r => r[mode].recall)),
       notePrecision: mean(mine.map(r => r[mode].precision)),
       supported: mean(mine.map(r => r[mode].supported)),
+      publishedPrecision: mean(mine.map(r => r[mode].publishedPrecision)),
+      publishedPerEvent: mean(mine.map(r => r[mode].published)),
     });
   }
 }
@@ -97,9 +105,9 @@ for (const model of models) {
 await mkdir('out', { recursive: true });
 await writeFile('out/eval-results.json', JSON.stringify({ ranAt: new Date().toISOString(), set: args.set, judge: CONFIG.judgeModel, summary, rows }, null, 2));
 const table = [
-  '| Model | Retrieval | Events | Tag accuracy | Recall@10 | Note precision | Supported by cited text |',
-  '| --- | --- | --- | --- | --- | --- | --- |',
-  ...summary.map(s => `| ${s.model} | ${s.mode} | ${s.events} | ${pct(s.tagAccuracy)} | ${pct(s.recallAt10)} | ${pct(s.notePrecision)} | ${pct(s.supported)} |`),
+  '| Model | Retrieval | Events | Tag accuracy | Recall@10 | Note precision | Supported by cited text | Published per event | Published precision |',
+  '| --- | --- | --- | --- | --- | --- | --- | --- | --- |',
+  ...summary.map(s => `| ${s.model} | ${s.mode} | ${s.events} | ${pct(s.tagAccuracy)} | ${pct(s.recallAt10)} | ${pct(s.notePrecision)} | ${pct(s.supported)} | ${s.publishedPerEvent == null ? 'n/a' : s.publishedPerEvent.toFixed(1)} | ${pct(s.publishedPrecision)} |`),
 ].join('\n');
 await writeFile('out/eval-report.md', `# Reed evaluation\n\nRun ${new Date().toISOString().slice(0, 10)} on ${events.length} events from ${args.set}. Judge model: ${CONFIG.judgeModel}.\n\n${table}\n\nErrors: ${rows.filter(r => r.error).length}\n`);
 console.log(`\n${table}`);
