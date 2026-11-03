@@ -1,0 +1,20 @@
+name: Report
+on:
+  workflow_dispatch:
+    inputs:
+      limit: { description: 'Events to show', required: false, default: '10' }
+permissions:
+  contents: read
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scripts/report.mjs --limit "${LIMIT:-10}" | tee -a "$GITHUB_STEP_SUMMARY"
+        env:
+          LIMIT: ${{ inputs.limit }}

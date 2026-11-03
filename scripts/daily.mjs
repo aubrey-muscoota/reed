@@ -52,6 +52,7 @@ for (const e of queue) {
         [e.id, n.ticker, n.company, n.summary, JSON.stringify(n.citations), CONFIG.model, new Date().toISOString()]);
     }
     console.log(`+ ${e.id} [${tag.category}] ${notes.length} notes: ${e.title}`);
+    for (const n of notes) console.log(`    ${n.ticker}: ${n.summary}`);
   } catch (err) {
     // Leave processed_at empty so the next run can retry this one.
     console.error(`! ${e.id} failed: ${err.message}`);
