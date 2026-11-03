@@ -78,3 +78,9 @@ test('extractSection accepts an inline "Risk Factors." heading', () => {
   assert.ok(s.startsWith('Risk factors. The following'));
   assert.ok(!s.includes('None.'));
 });
+
+test('htmlToText keeps drop-cap words whole and separates table cells', () => {
+  const t = htmlToText('<p><span style="font-size:14pt">R</span><span>ISK </span>F<span>ACTORS</span></p><table><tr><td>Item 1A</td><td>Risk</td></tr></table>');
+  assert.ok(t.includes('RISK FACTORS'));
+  assert.ok(t.includes('Item 1A Risk'));
+});
