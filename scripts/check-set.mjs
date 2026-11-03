@@ -7,7 +7,7 @@
 
 import { parseArgs } from 'node:util';
 import { readFile } from 'node:fs/promises';
-import { tickerMap, submissions, latestFilings, filingUrl, riskFactors } from '../lib/sec.mjs';
+import { tickerMap, submissions, latestFilings, filingUrl, riskFactors, secText } from '../lib/sec.mjs';
 
 const { values: args } = parseArgs({ options: { set: { type: 'string', default: 'eval/events.draft.jsonl' } } });
 const events = (await readFile(args.set, 'utf8')).split('\n').filter(Boolean).map(l => JSON.parse(l));
@@ -15,12 +15,18 @@ const tickers = JSON.parse(await readFile(new URL('../data/sp100.json', import.m
 
 const map = await tickerMap();
 const text = new Map();
+const rawText = new Map();
 for (const t of tickers) {
   const entry = map.get(t);
   if (!entry) continue;
   const [k] = latestFilings(await submissions(entry.cik), ['10-K']);
   if (!k) continue;
-  try { text.set(t, (await riskFactors(filingUrl(entry.cik, k))).toLowerCase()); } catch (e) { console.error(`${t}: ${e.message}`); }
+  try {
+    const url = filingUrl(entry.cik, k);
+    const rf = await riskFactors(url);
+    text.set(t, rf.toLowerCase());
+    if (rf.length < 3000) rawText.set(t, await secText(url));
+  } catch (e) { console.error(`${t}: ${e.message}`); }
 }
 
 const out = [`# Evaluation set check\n\n${text.size} companies' 10-K Risk Factors searched.\n`];
@@ -28,9 +34,10 @@ const out = [`# Evaluation set check\n\n${text.size} companies' 10-K Risk Factor
 // table-of-contents line, or risk factors kept in an exhibit).
 const lengths = [...text].map(([t, b]) => [t, b.length]).sort((a, b) => a[1] - b[1]);
 out.push(`Shortest extractions (characters): ${lengths.slice(0, 25).map(([t, n]) => `${t} ${n}`).join(', ')}\n`);
-for (const t of ['NVDA', 'LLY', 'WFC', 'C', 'MS', 'INTC']) {
-  const b = text.get(t) ?? '';
-  out.push(`${t} starts: ${JSON.stringify(b.slice(0, 160))} ... ends: ${JSON.stringify(b.slice(-160))}\n`);
+for (const [t] of lengths.filter(([, n]) => n < 3000)) {
+  const raw = (rawText.get(t) ?? '').toLowerCase();
+  const ctx = [...raw.matchAll(/risk factors/g)].slice(0, 8).map(m => JSON.stringify(raw.slice(Math.max(0, m.index - 60), m.index + 80)));
+  out.push(`${t} "risk factors" contexts:\n${ctx.map(c => `  ${c}`).join('\n')}\n`);
 }
 for (const e of events) {
   const res = (e.terms ?? []).map(s => new RegExp(s, 'g'));
