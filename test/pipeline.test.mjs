@@ -53,3 +53,13 @@ test('latestFilings picks the newest 10-K and 10-Q and builds the archive URL', 
   assert.equal(q.accession, '0000320193-26-000010');
   assert.equal(filingUrl(320193, k), 'https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm');
 });
+
+import { isRoutine } from '../lib/pipeline.mjs';
+
+test('isRoutine skips trade-remedy and procedural notices, keeps real actions', () => {
+  assert.ok(isRoutine({ title: "Truck Bed Covers From the People's Republic of China: Amended Preliminary Determination of the Less-Than-Fair-Value Investigation" }));
+  assert.ok(isRoutine({ title: 'Certain Softwood Lumber Products From Canada: Notice of NAFTA Panel Decision' }));
+  assert.ok(isRoutine({ title: 'Performance Review Board Membership' }));
+  assert.ok(!isRoutine({ title: 'Adjusting Imports of Robotics, Industrial Machinery, and Their Parts and Components Into the United States' }));
+  assert.ok(!isRoutine({ title: 'Imposing Duties to Address the Flow of Illicit Drugs Across Our Northern Border' }));
+});
