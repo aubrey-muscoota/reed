@@ -3,9 +3,6 @@ name: Sites from orbit
 # Separate from the daily Reed pipeline: it reads no D1 or Vectorize data and
 # writes nothing to Cloudflare. Results come back as a run artifact.
 on:
-  push:  # TEMP: test run on the PR branch; remove before merge
-    branches: [claude/project-thread-qte7yn]
-    paths: ['.github/workflows/sites.yml']
   workflow_dispatch:
     inputs:
       only: { description: 'Comma-separated claim ids (default: all)', required: false }
@@ -31,9 +28,9 @@ jobs:
           pip install -r sites/requirements.txt
           python sites/orbit.py ${ONLY:+--only "$ONLY"}
           cat sites/results/report.md >> "$GITHUB_STEP_SUMMARY"
-      - if: ${{ inputs.filings || github.event_name == 'push' }}
+      - if: ${{ inputs.filings }}
         run: node scripts/sites-filings.mjs ${ONLY:+--only "$ONLY"} | tee -a "$GITHUB_STEP_SUMMARY"
-      - if: ${{ inputs.judge || github.event_name == 'push' }}
+      - if: ${{ inputs.judge }}
         run: node scripts/sites-judge.mjs ${ONLY:+--only "$ONLY"} | tee -a "$GITHUB_STEP_SUMMARY"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

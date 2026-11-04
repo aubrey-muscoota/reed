@@ -249,6 +249,8 @@ def analyse(claim, pool, first_year, last_year):
 
 def verdict(claim, first_visible, snaps):
     """Compare the first visible change with the year the filing gives."""
+    if claim.get("control"):
+        return "control: work began before the archive"
     year = claim.get("claim_year")
     if year is None:
         return "no date in claim"

@@ -4,6 +4,31 @@ Companies describe physical projects in their 10-Ks: a new fab, a battery plant,
 
 It is descriptive and backward-looking. It says nothing about whether a project is on budget, says nothing about the companies' prospects, and gives no trading signal. It shares no code paths or data with any trading work, and nothing here feeds the daily Reed page.
 
+## Results (v0, November 2026)
+
+For all seven projects that started inside the imagery archive, lasting construction first shows in the same summer as the first 10-K that describes the project as committed or under construction, or the summer after. The eighth site, Plant Vogtle, is a control: its new units were built before 2018, so 10 m imagery shows no new ground work even though the 10-K reports them entering service in 2023 and 2024.
+
+| Site | First 10-K describing the project | First lasting change in imagery | Share of site changed by 2026 |
+| --- | --- | --- | --- |
+| Tesla, Gigafactory Texas | FY2020 ("under construction") | Aug 2020 | 70% |
+| Intel, Ohio fabs | FY2022 ("broke ground") | Aug 2022 | 69% |
+| Texas Instruments, Sherman SM1/SM2 | FY2022 ("starting construction") | Aug 2022 | 43% |
+| Ford, Tennessee EV and battery plants | FY2022 | Aug 2022 | 86% |
+| GM, Ultium Cells Lordstown | FY2020 ("announced plans") | Aug 2020 | 26% |
+| Eli Lilly, Lebanon IN | FY2022 ("committed to invest") | Aug 2023 | 60% |
+| ExxonMobil, Golden Pass LNG | 2019 decision (10-K text not yet pulled) | Jun 2019 | 37% |
+| Southern Co., Vogtle 3 and 4 (control) | FY2023 (units in service) | none | 11% |
+
+Things the comparison surfaced:
+
+- **Words lag the ground.** GM's FY2020 10-K only says it has "announced plans" to make cells in Lordstown, while the August 2020 image already shows the whole pad graded. Ford's 10-Ks never name BlueOval City; they describe "a new electric vehicle assembly plant" with Tennessee incentives.
+- **Slowdowns don't show at 10 m.** Intel's FY2024 10-K says it has "slowed the completion" of the Ohio fab. From 2023 on the site changes only slowly, and nothing at 10 m separates a slowed build from an on-schedule one. Imagery can confirm a start; it cannot confirm pace.
+- **Open vision models are hit and miss.** Shown only the dated images, Llama 4 Scout and Mistral Small 3.1 each matched the pixel measurement on 5 of 8 sites. Both called Vogtle "new construction in 2019", and Llama saw Intel's 2019 farm fields as cleared ground. Details in [`results/judge.md`](results/judge.md).
+
+Image strips with the lasting change marked in red are in [`results/report.md`](results/report.md). The filing sentences behind each row are in [`results/filings.md`](results/filings.md).
+
+![Gigafactory Texas, 2018 to 2026](results/tsla-giga-texas.jpg)
+
 ## What it does
 
 | Step | Script | Runs where |
@@ -30,14 +55,14 @@ python sites/orbit.py --locate 33.558,-96.615 --year 2025   # one wide image, to
 
 **Measuring change.** Each pixel is compared with the same pixel in the first year. It counts as changed when it became brighter in visible light by more than 0.05 reflectance (cleared soil, concrete, roofs) or lost more than 0.25 NDVI (paving, dark roofs). A changed pixel counts as **lasting** from year *t* only if it is still changed in every later clear year. Crop rotation and a dry summer come and go; graded pads and buildings stay. The **first lasting change** is the first year where at least 10% of the site box shows lasting change.
 
-**Verdict.** We compare the year of first lasting change with the year the filing gives for the start of physical work (`claim_year`): *consistent* if within a year either way, otherwise *earlier than stated* or *later than stated*. If nothing lasting shows by the latest image, the verdict says so.
+**Verdict.** 10-Ks rarely give a ground-breaking date, so `claim_year` is the fiscal year of the first 10-K in the set that describes the project as committed or under construction. We compare it with the year of first lasting change: *consistent* if within a year either way, otherwise *change visible earlier than stated* or *later than stated*. The latest image can't start a run of lasting change, since no later look confirms it. If nothing lasting shows, the verdict says so.
 
 **Sites.** Each site is a square 1.6 to 2.4 km across, centered by eye on the construction area in a recent image. The coordinates are ours, not the companies'; check the image strip before relying on a site.
 
 ## Limits
 
 - 10 m pixels show ground clearing, pads, large roofs and tanks. They do not show what is inside a building, whether equipment is installed, or whether a plant is producing. "Construction visible" is the most this can say, and the Vogtle row is there to show it.
-- The archive used here starts in 2017. Anything begun earlier has no "before" image.
+- The run starts in 2018 (the archive goes back to 2017 in most places). Anything begun earlier has no "before" image.
 - A site box can include neighbors' construction (Austin and Sherman both have other projects next door).
 - Our claim summaries are short paraphrases. Read the filing sentences in `sites/results/filings.md` before quoting a company.
 - Eight sites is a demonstration, not a sample. Thresholds were set by looking at these sites, so they are not tested out of sample.
