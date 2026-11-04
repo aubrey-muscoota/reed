@@ -53,7 +53,7 @@
       "claim": "Lilly is building manufacturing sites in Lebanon, Indiana; construction began in 2023.",
       "claim_year": 2023,
       "lat": 40.0980, "lon": -86.4970, "half_km": 1.0,
-      "filing": { "years": [2022, 2023, 2024], "phrases": ["Lebanon"] }
+      "filing": { "years": [2022, 2023, 2024], "phrases": ["Lebanon", "Indiana"] }
     },
     {
       "id": "xom-golden-pass",

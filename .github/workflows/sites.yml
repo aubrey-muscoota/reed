@@ -32,9 +32,9 @@ jobs:
           python sites/orbit.py ${ONLY:+--only "$ONLY"}
           cat sites/results/report.md >> "$GITHUB_STEP_SUMMARY"
       - if: ${{ inputs.filings || github.event_name == 'push' }}
-        run: node scripts/sites-filings.mjs ${ONLY:+--only "$ONLY"} >> "$GITHUB_STEP_SUMMARY"
+        run: node scripts/sites-filings.mjs ${ONLY:+--only "$ONLY"} | tee -a "$GITHUB_STEP_SUMMARY"
       - if: ${{ inputs.judge || github.event_name == 'push' }}
-        run: node scripts/sites-judge.mjs ${ONLY:+--only "$ONLY"} >> "$GITHUB_STEP_SUMMARY"
+        run: node scripts/sites-judge.mjs ${ONLY:+--only "$ONLY"} | tee -a "$GITHUB_STEP_SUMMARY"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

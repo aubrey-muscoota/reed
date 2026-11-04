@@ -11,7 +11,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { cloudflare, parseJson } from '../lib/cf.mjs';
 
 const { values: args } = parseArgs({ options: {
-  models: { type: 'string', default: process.env.SITES_MODELS ?? '@cf/meta/llama-4-scout-17b-16e-instruct,@cf/google/gemma-3-12b-it' },
+  models: { type: 'string', default: process.env.SITES_MODELS ?? '@cf/meta/llama-4-scout-17b-16e-instruct,@cf/mistralai/mistral-small-3.1-24b-instruct' },
   only: { type: 'string' },
 } });
 const root = new URL('../sites/', import.meta.url);
@@ -37,10 +37,12 @@ for (const c of claims) {
   for (const model of args.models.split(',')) {
     let answer, error;
     try {
-      const text = await cf.chat(model, [{ role: 'user', content: [
+      const text = await cf.chat(model, [
+        { role: 'system', content: 'You read satellite images carefully. Reply with one JSON object and nothing else.' },
+        { role: 'user', content: [
         { type: 'text', text: prompt(c, dates) },
         { type: 'image_url', image_url: { url: image } },
-      ] }], { max_tokens: 400 });
+      ] }], { max_tokens: 800 });
       answer = parseJson(text);
     } catch (e) { error = e.message; }
     const year = answer?.first_visible ? Number(String(answer.first_visible).slice(0, 4)) : null;

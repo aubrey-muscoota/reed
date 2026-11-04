@@ -7,7 +7,7 @@
 
 import { parseArgs } from 'node:util';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { tickerMap, submissions, filingUrl, secText } from '../lib/sec.mjs';
+import { tickerMap, submissions, submissionsPage, filingUrl, secText } from '../lib/sec.mjs';
 import { annualReports, mentions } from '../lib/sites.mjs';
 
 const { values: args } = parseArgs({ options: { only: { type: 'string' } } });
@@ -20,7 +20,15 @@ const results = [];
 for (const c of claims) {
   const entry = map.get(c.ticker);
   if (!entry) { results.push({ id: c.id, error: `no CIK for ${c.ticker}` }); continue; }
-  const reports = annualReports(await submissions(entry.cik), c.filing.years);
+  const subs = await submissions(entry.cik);
+  let reports = annualReports(subs, c.filing.years);
+  // Companies that file often (ExxonMobil) push older 10-Ks out of the
+  // recent list; look through the older pages for the missing years.
+  for (const page of subs.filings.files ?? []) {
+    if (reports.length === c.filing.years.length) break;
+    const older = annualReports({ filings: { recent: await submissionsPage(page.name) } }, c.filing.years);
+    reports = [...reports, ...older.filter(f => !reports.some(r => r.year === f.year))].sort((a, b) => a.year - b.year);
+  }
   const found = [];
   for (const f of reports) {
     const url = filingUrl(entry.cik, f);
