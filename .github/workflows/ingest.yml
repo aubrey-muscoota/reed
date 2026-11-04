@@ -8,6 +8,7 @@ on:
     inputs:
       tickers: { description: 'Comma-separated tickers (default: all)', required: false }
       max_chunks: { description: 'Most passages to embed this run', required: false, default: '2500' }
+      reindex: { description: 'Redo filings already indexed', type: boolean, default: false }
 permissions:
   contents: read
 concurrency: reed-data
@@ -21,7 +22,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: node scripts/ingest.mjs --max-chunks "${MAX_CHUNKS:-2500}" ${TICKERS:+--tickers "$TICKERS"}
+      - run: node scripts/ingest.mjs --max-chunks "${MAX_CHUNKS:-2500}" ${TICKERS:+--tickers "$TICKERS"} ${REINDEX:+--reindex}
         env:
+          REINDEX: ${{ inputs.reindex && '1' || '' }}
           MAX_CHUNKS: ${{ inputs.max_chunks }}
           TICKERS: ${{ inputs.tickers }}

@@ -47,3 +47,40 @@ test('chunk makes overlapping passages of bounded size and keeps all text', () =
 test('chunk keeps a short section as one passage', () => {
   assert.deepEqual(chunk('just a few words'), ['just a few words']);
 });
+
+const body = Array.from({ length: 80 }, (_, i) => `Risk paragraph ${i} about export controls and supply chains in many markets.`).join('\n');
+
+test('extractSection ignores mid-sentence cross-references that run to the end', () => {
+  const t = `Item 1A. Risk Factors\nItem 1B. Unresolved Staff Comments\nItem 1. Business\nSee Item 1A. Risk Factors\nItem 1A. Risk Factors\n${body}\nItem 1B. Unresolved Staff Comments\nNone.\nItem 7. MD&A\nAs discussed in "Item 1A. Risk Factors," our results vary.\n${'Long MD&A text. '.repeat(2000)}`;
+  const s = extractSection(t);
+  assert.ok(s.startsWith('Item 1A. Risk Factors\nRisk paragraph 0'));
+  assert.ok(!s.includes('MD&A'));
+});
+
+test('extractSection falls back to a bare Risk Factors heading', () => {
+  const t = `Item 1A\nPages 37 - 51\nRisk Factors\n${body}\nUnresolved Staff Comments\nNone.`;
+  const s = extractSection(t);
+  assert.ok(s.startsWith('Risk Factors'));
+  assert.ok(s.includes('Risk paragraph 79'));
+  assert.ok(!s.includes('None.'));
+});
+
+test('extractSection uses repeated "Item 1A" page headers when the heading is odd', () => {
+  const t = `Item 1A.\n\nRisk Factors\n\n14\n\nItem 1B.\n\nUnresolved\n\nPart I\nItem 1A\n${body}\nPart I\nItem 1A\nMore risks.\nItem 1B. Unresolved Staff Comments\nNone.`;
+  const s = extractSection(t);
+  assert.ok(s.includes('Risk paragraph 79') && s.includes('More risks.'));
+  assert.ok(!s.includes('None.'));
+});
+
+test('extractSection accepts an inline "Risk Factors." heading', () => {
+  const t = `Cybersecurity\n23\nRisk factors\n24\nLegal proceedings\n31\nRisk factors. The following discussion covers risks.\n${body}\nLegal proceedings\nNone.`;
+  const s = extractSection(t);
+  assert.ok(s.startsWith('Risk factors. The following'));
+  assert.ok(!s.includes('None.'));
+});
+
+test('htmlToText keeps drop-cap words whole and separates table cells', () => {
+  const t = htmlToText('<p><span style="font-size:14pt">R</span><span>ISK </span>F<span>ACTORS</span></p><table><tr><td>Item 1A</td><td>Risk</td></tr></table>');
+  assert.ok(t.includes('RISK FACTORS'));
+  assert.ok(t.includes('Item 1A Risk'));
+});

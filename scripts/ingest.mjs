@@ -17,6 +17,8 @@ const { values: args } = parseArgs({
     tickers: { type: 'string' },
     'max-chunks': { type: 'string', default: '2500' },
     'dry-run': { type: 'boolean', default: false },
+    // Redo filings already indexed (after an extraction fix), replacing their passages.
+    reindex: { type: 'boolean', default: false },
   },
 });
 
@@ -27,7 +29,13 @@ const dry = args['dry-run'];
 
 const cf = dry ? null : cloudflare();
 const db = dry ? null : openDb(cf, await d1Id(cf));
-const done = new Set(dry ? [] : (await db.all('SELECT accession FROM filings')).map(r => r.accession));
+const indexed = new Map(dry ? [] : (await db.all('SELECT accession, chunks FROM filings')).map(r => [r.accession, r.chunks]));
+// With --reindex, filings re-done in an earlier run since this date are skipped, so the job can resume.
+const reindexedSince = args.reindex ? (process.env.REED_REINDEX_SINCE ?? new Date().toISOString().slice(0, 10)) : null;
+const done = new Set(dry ? [] : (await db.all(
+  reindexedSince ? 'SELECT accession FROM filings WHERE ingested_at >= ?' : 'SELECT accession FROM filings',
+  reindexedSince ? [reindexedSince] : [],
+)).map(r => r.accession));
 
 const map = await tickerMap();
 let embedded = 0;
@@ -57,6 +65,11 @@ outer: for (const ticker of tickers) {
         values,
         metadata: { ticker, company: entry.company, form: f.form, filed: f.filed, url, section: 'Item 1A. Risk Factors', text: batch[j] },
       }));
+    }
+    const old = indexed.get(f.accession) ?? 0;
+    if (old > 0) {
+      const stale = Array.from({ length: old }, (_, i) => `${f.accession}-${i}`);
+      for (let i = 0; i < stale.length; i += 500) await cf.vectorize.deleteByIds(CONFIG.index, stale.slice(i, i + 500));
     }
     for (let i = 0; i < vectors.length; i += 200) await cf.vectorize.upsert(CONFIG.index, vectors.slice(i, i + 200));
     await db.all(
