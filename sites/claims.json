@@ -1,0 +1,78 @@
+{
+  "note": "Facility projects described in S&P 100 annual reports. 'claim' is our one-line summary; the filing's own words are pulled by scripts/sites-filings.mjs into sites/results/filings.json and should be read before quoting. Coordinates were placed by eye on Sentinel-2 images (see sites/README.md) and mark the center of the construction area. claim_year is the year the filing gives for the start of physical work.",
+  "claims": [
+    {
+      "id": "tsla-giga-texas",
+      "ticker": "TSLA", "company": "Tesla",
+      "site": "Gigafactory Texas, Austin TX",
+      "claim": "Construction of Gigafactory Texas began in 2020; Model Y production started there in 2022.",
+      "claim_year": 2020,
+      "lat": 30.2220, "lon": -97.6170, "half_km": 1.0,
+      "filing": { "years": [2020, 2021, 2022], "phrases": ["Gigafactory Texas"] }
+    },
+    {
+      "id": "intc-ohio-one",
+      "ticker": "INTC", "company": "Intel",
+      "site": "Ohio One fabs, Licking County OH",
+      "claim": "Construction of two leading-edge fabs in Ohio began in 2022; later filings push completion to about 2030-2031.",
+      "claim_year": 2022,
+      "lat": 40.1160, "lon": -82.7110, "half_km": 1.0,
+      "filing": { "years": [2022, 2023, 2024], "phrases": ["Ohio"] }
+    },
+    {
+      "id": "txn-sherman",
+      "ticker": "TXN", "company": "Texas Instruments",
+      "site": "SM1 300-mm fab, Sherman TX",
+      "claim": "Construction of new 300-mm wafer fabs in Sherman began in 2022; the first started production in 2025.",
+      "claim_year": 2022,
+      "lat": 33.5580, "lon": -96.6150, "half_km": 0.8,
+      "filing": { "years": [2022, 2023, 2024], "phrases": ["Sherman"] }
+    },
+    {
+      "id": "f-blueoval-city",
+      "ticker": "F", "company": "Ford",
+      "site": "BlueOval City, Stanton TN",
+      "claim": "Ford is building BlueOval City, a vehicle and battery manufacturing campus in Tennessee; site work began in 2022.",
+      "claim_year": 2022,
+      "lat": 35.4240, "lon": -89.4240, "half_km": 1.2,
+      "filing": { "years": [2022, 2023, 2024], "phrases": ["BlueOval City", "Tennessee"] }
+    },
+    {
+      "id": "gm-ultium-lordstown",
+      "ticker": "GM", "company": "General Motors",
+      "site": "Ultium Cells battery plant, Lordstown OH",
+      "claim": "GM's Ultium Cells joint venture built a battery cell plant in Lordstown, Ohio, starting in 2020; it began production in 2022.",
+      "claim_year": 2020,
+      "lat": 41.1500, "lon": -80.8600, "half_km": 0.8,
+      "filing": { "years": [2020, 2021, 2022], "phrases": ["Ultium Cells", "Lordstown"] }
+    },
+    {
+      "id": "lly-lebanon",
+      "ticker": "LLY", "company": "Eli Lilly",
+      "site": "Lebanon manufacturing site, Boone County IN",
+      "claim": "Lilly is building manufacturing sites in Lebanon, Indiana; construction began in 2023.",
+      "claim_year": 2023,
+      "lat": 40.0980, "lon": -86.4970, "half_km": 1.0,
+      "filing": { "years": [2022, 2023, 2024], "phrases": ["Lebanon"] }
+    },
+    {
+      "id": "xom-golden-pass",
+      "ticker": "XOM", "company": "ExxonMobil",
+      "site": "Golden Pass LNG export terminal, Sabine Pass TX",
+      "claim": "ExxonMobil's Golden Pass LNG joint venture took its final investment decision in 2019 and is building liquefaction trains at the existing import terminal.",
+      "claim_year": 2019,
+      "lat": 29.7550, "lon": -93.9200, "half_km": 1.0,
+      "months": [3, 4, 5, 6, 7, 8, 9, 10, 11],
+      "filing": { "years": [2019, 2020, 2023], "phrases": ["Golden Pass"] }
+    },
+    {
+      "id": "so-vogtle-3-4",
+      "ticker": "SO", "company": "Southern Company",
+      "site": "Plant Vogtle Units 3 and 4, Waynesboro GA",
+      "claim": "Vogtle Units 3 and 4 entered commercial operation in 2023 and 2024. Construction started around 2013, before the Sentinel-2 archive, so this is a control for what 10 m imagery cannot see.",
+      "claim_year": 2023,
+      "lat": 33.1400, "lon": -81.7750, "half_km": 1.0,
+      "filing": { "years": [2023, 2024], "phrases": ["Vogtle Units 3 and 4"] }
+    }
+  ]
+}

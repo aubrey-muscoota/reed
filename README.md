@@ -43,3 +43,7 @@ Scripts need `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` in the environme
 ## Evaluation set
 
 `eval/events.jsonl` is a first draft of past government actions with the companies a careful reader would expect. It has not been checked against the filings yet; check each row before publishing results.
+
+## Sites from orbit
+
+A separate, run-by-hand study in `sites/`: for eight facility projects described in 10-Ks, it measures when lasting construction first shows in free Sentinel-2 imagery and compares that with the filing. It also tests whether open vision models can read the same images. Method, results, limits and the Copernicus credit rules are in [`sites/README.md`](sites/README.md). It does not touch the daily pipeline's data.
