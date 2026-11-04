@@ -69,7 +69,7 @@ outer: for (const ticker of tickers) {
     const old = indexed.get(f.accession) ?? 0;
     if (old > 0) {
       const stale = Array.from({ length: old }, (_, i) => `${f.accession}-${i}`);
-      for (let i = 0; i < stale.length; i += 500) await cf.vectorize.deleteByIds(CONFIG.index, stale.slice(i, i + 500));
+      for (let i = 0; i < stale.length; i += 100) await cf.vectorize.deleteByIds(CONFIG.index, stale.slice(i, i + 100)); // API limit: 100 ids per call
     }
     for (let i = 0; i < vectors.length; i += 200) await cf.vectorize.upsert(CONFIG.index, vectors.slice(i, i + 200));
     await db.all(
