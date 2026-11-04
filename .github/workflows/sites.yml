@@ -1,0 +1,40 @@
+name: Sites from orbit
+# Run by hand. Checks facility claims from 10-Ks against Sentinel-2 imagery.
+# Separate from the daily Reed pipeline: it reads no D1 or Vectorize data and
+# writes nothing to Cloudflare. Results come back as a run artifact.
+on:
+  workflow_dispatch:
+    inputs:
+      only: { description: 'Comma-separated claim ids (default: all)', required: false }
+      imagery: { description: 'Fetch imagery and measure change', type: boolean, default: true }
+      filings: { description: 'Pull what the 10-Ks say (SEC EDGAR)', type: boolean, default: true }
+      judge: { description: 'Ask vision models on Workers AI (uses Cloudflare credit)', type: boolean, default: false }
+permissions:
+  contents: read
+jobs:
+  sites:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      ONLY: ${{ inputs.only }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - if: ${{ inputs.imagery }}
+        run: |
+          pip install -r sites/requirements.txt
+          python sites/orbit.py ${ONLY:+--only "$ONLY"}
+          cat sites/results/report.md >> "$GITHUB_STEP_SUMMARY"
+      - if: ${{ inputs.filings }}
+        run: node scripts/sites-filings.mjs ${ONLY:+--only "$ONLY"} | tee -a "$GITHUB_STEP_SUMMARY"
+      - if: ${{ inputs.judge }}
+        run: node scripts/sites-judge.mjs ${ONLY:+--only "$ONLY"} | tee -a "$GITHUB_STEP_SUMMARY"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: sites-results, path: sites/results/ }

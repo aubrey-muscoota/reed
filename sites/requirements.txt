@@ -1,0 +1,4 @@
+rasterio>=1.4,<2
+mgrs>=1.5,<2
+numpy>=2,<3
+pillow>=10,<13

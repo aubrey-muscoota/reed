@@ -1,0 +1,659 @@
+{
+ "generated": "2026-11-04",
+ "settings": {
+  "brighter": 0.05,
+  "green_loss": 0.25,
+  "visible": 0.1,
+  "min_clear": 0.9
+ },
+ "results": [
+  {
+   "id": "tsla-giga-texas",
+   "tile": "14RPU",
+   "first_year": 2018,
+   "first_visible": "20200814",
+   "snapshots": [
+    {
+     "year": 2018,
+     "date": "20180823",
+     "scene": "S2A_14RPU_20180823_1_L2A",
+     "clear": 0.996,
+     "changed": 0.0,
+     "persistent": 0.0
+    },
+    {
+     "year": 2019,
+     "date": "20190731",
+     "scene": "S2B_14RPU_20190731_1_L2A",
+     "clear": 0.995,
+     "changed": 0.061,
+     "persistent": 0.019
+    },
+    {
+     "year": 2020,
+     "date": "20200814",
+     "scene": "S2B_14RPU_20200814_1_L2A",
+     "clear": 0.997,
+     "changed": 0.312,
+     "persistent": 0.237
+    },
+    {
+     "year": 2021,
+     "date": "20210725",
+     "scene": "S2A_14RPU_20210725_2_L2A",
+     "clear": 0.999,
+     "changed": 0.554,
+     "persistent": 0.477
+    },
+    {
+     "year": 2022,
+     "date": "20220804",
+     "scene": "S2B_14RPU_20220804_1_L2A",
+     "clear": 1.0,
+     "changed": 0.735,
+     "persistent": 0.542
+    },
+    {
+     "year": 2023,
+     "date": "20230817",
+     "scene": "S2A_14RPU_20230817_0_L2A",
+     "clear": 1.0,
+     "changed": 0.716,
+     "persistent": 0.593
+    },
+    {
+     "year": 2024,
+     "date": "20240816",
+     "scene": "S2B_14RPU_20240816_0_L2A",
+     "clear": 0.999,
+     "changed": 0.675,
+     "persistent": 0.613
+    },
+    {
+     "year": 2025,
+     "date": "20250813",
+     "scene": "S2C_14RPU_20250813_0_L2A",
+     "clear": 1.0,
+     "changed": 0.721,
+     "persistent": 0.651
+    },
+    {
+     "year": 2026,
+     "date": "20260816",
+     "scene": "S2B_14RPU_20260816_0_L2A",
+     "clear": 0.997,
+     "changed": 0.704,
+     "persistent": 0.704
+    }
+   ],
+   "verdict": "consistent"
+  },
+  {
+   "id": "intc-ohio-one",
+   "tile": "17TLE",
+   "first_year": 2018,
+   "first_visible": "20220817",
+   "snapshots": [
+    {
+     "year": 2018,
+     "date": "20180823",
+     "scene": "S2B_17TLE_20180823_1_L2A",
+     "clear": 1.0,
+     "changed": 0.0,
+     "persistent": 0.0
+    },
+    {
+     "year": 2019,
+     "date": "20190714",
+     "scene": "S2A_17TLE_20190714_1_L2A",
+     "clear": 1.0,
+     "changed": 0.184,
+     "persistent": 0.0
+    },
+    {
+     "year": 2020,
+     "date": "20200822",
+     "scene": "S2B_17TLE_20200822_1_L2A",
+     "clear": 1.0,
+     "changed": 0.026,
+     "persistent": 0.0
+    },
+    {
+     "year": 2021,
+     "date": "20210827",
+     "scene": "S2B_17TLE_20210827_1_L2A",
+     "clear": 1.0,
+     "changed": 0.004,
+     "persistent": 0.002
+    },
+    {
+     "year": 2022,
+     "date": "20220817",
+     "scene": "S2A_17TLE_20220817_0_L2A",
+     "clear": 1.0,
+     "changed": 0.536,
+     "persistent": 0.477
+    },
+    {
+     "year": 2023,
+     "date": "20230802",
+     "scene": "S2A_17TLE_20230802_0_L2A",
+     "clear": 1.0,
+     "changed": 0.978,
+     "persistent": 0.653
+    },
+    {
+     "year": 2024,
+     "date": "20240727",
+     "scene": "S2A_17TLE_20240727_0_L2A",
+     "clear": 1.0,
+     "changed": 0.735,
+     "persistent": 0.655
+    },
+    {
+     "year": 2025,
+     "date": "20250806",
+     "scene": "S2B_17TLE_20250806_0_L2A",
+     "clear": 1.0,
+     "changed": 0.685,
+     "persistent": 0.66
+    },
+    {
+     "year": 2026,
+     "date": "20260821",
+     "scene": "S2B_17TLE_20260821_0_L2A",
+     "clear": 1.0,
+     "changed": 0.688,
+     "persistent": 0.688
+    }
+   ],
+   "verdict": "consistent"
+  },
+  {
+   "id": "txn-sherman",
+   "tile": "14SQC",
+   "first_year": 2018,
+   "first_visible": "20220807",
+   "snapshots": [
+    {
+     "year": 2018,
+     "date": "20180815",
+     "scene": "S2B_14SQC_20180815_1_L2A",
+     "clear": 1.0,
+     "changed": 0.0,
+     "persistent": 0.0
+    },
+    {
+     "year": 2019,
+     "date": "20190818",
+     "scene": "S2A_14SQC_20190818_3_L2A",
+     "clear": 1.0,
+     "changed": 0.104,
+     "persistent": 0.026
+    },
+    {
+     "year": 2020,
+     "date": "20200814",
+     "scene": "S2B_14SQC_20200814_1_L2A",
+     "clear": 1.0,
+     "changed": 0.107,
+     "persistent": 0.027
+    },
+    {
+     "year": 2021,
+     "date": "20210812",
+     "scene": "S2B_14SQC_20210812_1_L2A",
+     "clear": 1.0,
+     "changed": 0.101,
+     "persistent": 0.029
+    },
+    {
+     "year": 2022,
+     "date": "20220807",
+     "scene": "S2B_14SQC_20220807_0_L2A",
+     "clear": 1.0,
+     "changed": 0.423,
+     "persistent": 0.282
+    },
+    {
+     "year": 2023,
+     "date": "20230814",
+     "scene": "S2A_14SQC_20230814_0_L2A",
+     "clear": 1.0,
+     "changed": 0.411,
+     "persistent": 0.3
+    },
+    {
+     "year": 2024,
+     "date": "20240816",
+     "scene": "S2B_14SQC_20240816_0_L2A",
+     "clear": 1.0,
+     "changed": 0.452,
+     "persistent": 0.365
+    },
+    {
+     "year": 2025,
+     "date": "20250813",
+     "scene": "S2C_14SQC_20250813_0_L2A",
+     "clear": 1.0,
+     "changed": 0.426,
+     "persistent": 0.396
+    },
+    {
+     "year": 2026,
+     "date": "20260816",
+     "scene": "S2B_14SQC_20260816_0_L2A",
+     "clear": 1.0,
+     "changed": 0.428,
+     "persistent": 0.428
+    }
+   ],
+   "verdict": "consistent"
+  },
+  {
+   "id": "f-blueoval-city",
+   "tile": "16SBE",
+   "first_year": 2018,
+   "first_visible": "20220813",
+   "snapshots": [
+    {
+     "year": 2018,
+     "date": "20180814",
+     "scene": "S2A_16SBE_20180814_1_L2A",
+     "clear": 1.0,
+     "changed": 0.0,
+     "persistent": 0.0
+    },
+    {
+     "year": 2019,
+     "date": "20190804",
+     "scene": "S2B_16SBE_20190804_1_L2A",
+     "clear": 1.0,
+     "changed": 0.001,
+     "persistent": 0.0
+    },
+    {
+     "year": 2020,
+     "date": "20200818",
+     "scene": "S2B_16SBE_20200818_1_L2A",
+     "clear": 1.0,
+     "changed": 0.087,
+     "persistent": 0.0
+    },
+    {
+     "year": 2021,
+     "date": "20210808",
+     "scene": "S2A_16SBE_20210808_1_L2A",
+     "clear": 1.0,
+     "changed": 0.065,
+     "persistent": 0.052
+    },
+    {
+     "year": 2022,
+     "date": "20220813",
+     "scene": "S2A_16SBE_20220813_0_L2A",
+     "clear": 1.0,
+     "changed": 0.771,
+     "persistent": 0.729
+    },
+    {
+     "year": 2023,
+     "date": "20230818",
+     "scene": "S2A_16SBE_20230818_0_L2A",
+     "clear": 1.0,
+     "changed": 0.899,
+     "persistent": 0.845
+    },
+    {
+     "year": 2024,
+     "date": "20240817",
+     "scene": "S2B_16SBE_20240817_0_L2A",
+     "clear": 1.0,
+     "changed": 0.9,
+     "persistent": 0.854
+    },
+    {
+     "year": 2025,
+     "date": "20250829",
+     "scene": "S2A_16SBE_20250829_0_L2A",
+     "clear": 1.0,
+     "changed": 0.898,
+     "persistent": 0.862
+    },
+    {
+     "year": 2026,
+     "date": "20260817",
+     "scene": "S2B_16SBE_20260817_0_L2A",
+     "clear": 1.0,
+     "changed": 0.865,
+     "persistent": 0.865
+    }
+   ],
+   "verdict": "consistent"
+  },
+  {
+   "id": "gm-ultium-lordstown",
+   "tile": "17TNF",
+   "first_year": 2018,
+   "first_visible": "20200809",
+   "snapshots": [
+    {
+     "year": 2018,
+     "date": "20180706",
+     "scene": "S2A_17TNF_20180706_1_L2A",
+     "clear": 1.0,
+     "changed": 0.0,
+     "persistent": 0.0
+    },
+    {
+     "year": 2019,
+     "date": "20190825",
+     "scene": "S2B_17TNF_20190825_1_L2A",
+     "clear": 1.0,
+     "changed": 0.003,
+     "persistent": 0.0
+    },
+    {
+     "year": 2020,
+     "date": "20200809",
+     "scene": "S2B_17TNF_20200809_1_L2A",
+     "clear": 1.0,
+     "changed": 0.292,
+     "persistent": 0.176
+    },
+    {
+     "year": 2021,
+     "date": "20210824",
+     "scene": "S2B_17TNF_20210824_1_L2A",
+     "clear": 0.998,
+     "changed": 0.317,
+     "persistent": 0.182
+    },
+    {
+     "year": 2022,
+     "date": "20220819",
+     "scene": "S2B_17TNF_20220819_0_L2A",
+     "clear": 0.993,
+     "changed": 0.204,
+     "persistent": 0.184
+    },
+    {
+     "year": 2023,
+     "date": "20230809",
+     "scene": "S2A_17TNF_20230809_0_L2A",
+     "clear": 0.998,
+     "changed": 0.304,
+     "persistent": 0.23
+    },
+    {
+     "year": 2024,
+     "date": "20240912",
+     "scene": "S2A_17TNF_20240912_0_L2A",
+     "clear": 0.999,
+     "changed": 0.279,
+     "persistent": 0.234
+    },
+    {
+     "year": 2025,
+     "date": "20250818",
+     "scene": "S2C_17TNF_20250818_0_L2A",
+     "clear": 0.997,
+     "changed": 0.307,
+     "persistent": 0.246
+    },
+    {
+     "year": 2026,
+     "date": "20260803",
+     "scene": "S2C_17TNF_20260803_0_L2A",
+     "clear": 0.997,
+     "changed": 0.261,
+     "persistent": 0.261
+    }
+   ],
+   "verdict": "consistent"
+  },
+  {
+   "id": "lly-lebanon",
+   "tile": "16TEK",
+   "first_year": 2018,
+   "first_visible": "20230820",
+   "snapshots": [
+    {
+     "year": 2018,
+     "date": "20180806",
+     "scene": "S2B_16TEK_20180806_1_L2A",
+     "clear": 1.0,
+     "changed": 0.0,
+     "persistent": 0.0
+    },
+    {
+     "year": 2019,
+     "date": "20190910",
+     "scene": "S2B_16TEK_20190910_1_L2A",
+     "clear": 1.0,
+     "changed": 0.103,
+     "persistent": 0.001
+    },
+    {
+     "year": 2020,
+     "date": "20200820",
+     "scene": "S2A_16TEK_20200820_1_L2A",
+     "clear": 1.0,
+     "changed": 0.003,
+     "persistent": 0.001
+    },
+    {
+     "year": 2021,
+     "date": "20210815",
+     "scene": "S2A_16TEK_20210815_1_L2A",
+     "clear": 0.998,
+     "changed": 0.01,
+     "persistent": 0.007
+    },
+    {
+     "year": 2022,
+     "date": "20220721",
+     "scene": "S2A_16TEK_20220721_0_L2A",
+     "clear": 1.0,
+     "changed": 0.181,
+     "persistent": 0.081
+    },
+    {
+     "year": 2023,
+     "date": "20230820",
+     "scene": "S2B_16TEK_20230820_0_L2A",
+     "clear": 1.0,
+     "changed": 0.481,
+     "persistent": 0.439
+    },
+    {
+     "year": 2024,
+     "date": "20240824",
+     "scene": "S2B_16TEK_20240824_0_L2A",
+     "clear": 1.0,
+     "changed": 0.553,
+     "persistent": 0.504
+    },
+    {
+     "year": 2025,
+     "date": "20250814",
+     "scene": "S2C_16TEK_20250814_0_L2A",
+     "clear": 1.0,
+     "changed": 0.591,
+     "persistent": 0.567
+    },
+    {
+     "year": 2026,
+     "date": "20260730",
+     "scene": "S2C_16TEK_20260730_0_L2A",
+     "clear": 1.0,
+     "changed": 0.603,
+     "persistent": 0.603
+    }
+   ],
+   "verdict": "consistent"
+  },
+  {
+   "id": "xom-golden-pass",
+   "tile": "15RVN",
+   "first_year": 2018,
+   "first_visible": "20190628",
+   "snapshots": [
+    {
+     "year": 2018,
+     "date": "20180802",
+     "scene": "S2B_15RVN_20180802_1_L2A",
+     "clear": 1.0,
+     "changed": 0.0,
+     "persistent": 0.0
+    },
+    {
+     "year": 2019,
+     "date": "20190628",
+     "scene": "S2B_15RVN_20190628_1_L2A",
+     "clear": 1.0,
+     "changed": 0.225,
+     "persistent": 0.114
+    },
+    {
+     "year": 2020,
+     "date": "20200702",
+     "scene": "S2B_15RVN_20200702_1_L2A",
+     "clear": 1.0,
+     "changed": 0.32,
+     "persistent": 0.224
+    },
+    {
+     "year": 2021,
+     "date": "20210811",
+     "scene": "S2A_15RVN_20210811_1_L2A",
+     "clear": 1.0,
+     "changed": 0.364,
+     "persistent": 0.236
+    },
+    {
+     "year": 2022,
+     "date": "20220801",
+     "scene": "S2B_15RVN_20220801_0_L2A",
+     "clear": 1.0,
+     "changed": 0.27,
+     "persistent": 0.253
+    },
+    {
+     "year": 2023,
+     "date": "20230702",
+     "scene": "S2A_15RVN_20230702_0_L2A",
+     "clear": 0.999,
+     "changed": 0.479,
+     "persistent": 0.286
+    },
+    {
+     "year": 2024,
+     "date": "20240716",
+     "scene": "S2A_15RVN_20240716_0_L2A",
+     "clear": 1.0,
+     "changed": 0.352,
+     "persistent": 0.288
+    },
+    {
+     "year": 2025,
+     "date": "20250904",
+     "scene": "S2B_15RVN_20250904_0_L2A",
+     "clear": 0.995,
+     "changed": 0.383,
+     "persistent": 0.314
+    },
+    {
+     "year": 2026,
+     "date": "20260721",
+     "scene": "S2B_15RVN_20260721_0_L2A",
+     "clear": 1.0,
+     "changed": 0.374,
+     "persistent": 0.374
+    }
+   ],
+   "verdict": "consistent"
+  },
+  {
+   "id": "so-vogtle-3-4",
+   "tile": "17SMS",
+   "first_year": 2018,
+   "first_visible": null,
+   "snapshots": [
+    {
+     "year": 2018,
+     "date": "20180807",
+     "scene": "S2B_17SMS_20180807_1_L2A",
+     "clear": 1.0,
+     "changed": 0.0,
+     "persistent": 0.0
+    },
+    {
+     "year": 2019,
+     "date": "20190731",
+     "scene": "S2A_17SMS_20190731_1_L2A",
+     "clear": 1.0,
+     "changed": 0.131,
+     "persistent": 0.01
+    },
+    {
+     "year": 2020,
+     "date": "20200811",
+     "scene": "S2A_17SMS_20200811_1_L2A",
+     "clear": 1.0,
+     "changed": 0.107,
+     "persistent": 0.017
+    },
+    {
+     "year": 2021,
+     "date": "20210910",
+     "scene": "S2B_17SMS_20210910_1_L2A",
+     "clear": 1.0,
+     "changed": 0.071,
+     "persistent": 0.024
+    },
+    {
+     "year": 2022,
+     "date": "20220814",
+     "scene": "S2A_17SMS_20220814_0_L2A",
+     "clear": 1.0,
+     "changed": 0.109,
+     "persistent": 0.039
+    },
+    {
+     "year": 2023,
+     "date": "20230809",
+     "scene": "S2A_17SMS_20230809_0_L2A",
+     "clear": 0.987,
+     "changed": 0.087,
+     "persistent": 0.048
+    },
+    {
+     "year": 2024,
+     "date": "20240922",
+     "scene": "S2A_17SMS_20240922_0_L2A",
+     "clear": 1.0,
+     "changed": 0.155,
+     "persistent": 0.083
+    },
+    {
+     "year": 2025,
+     "date": "20250909",
+     "scene": "S2B_17SMS_20250909_0_L2A",
+     "clear": 1.0,
+     "changed": 0.176,
+     "persistent": 0.099
+    },
+    {
+     "year": 2026,
+     "date": "20260823",
+     "scene": "S2C_17SMS_20260823_0_L2A",
+     "clear": 1.0,
+     "changed": 0.11,
+     "persistent": 0.11
+    }
+   ],
+   "verdict": "control: work began before the archive"
+  }
+ ]
+}

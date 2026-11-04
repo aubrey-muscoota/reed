@@ -1,0 +1,187 @@
+{
+  "note": "Facility projects described in S&P 100 annual reports. 'claim' paraphrases what the 10-Ks say; the sentences themselves are in sites/results/filings.md (from scripts/sites-filings.mjs). claim_year is the fiscal year of the first 10-K in the set that describes the project as committed or under construction; filings rarely give a ground-breaking date. Coordinates were placed by eye on Sentinel-2 images and mark the center of the construction area, not a company-given location.",
+  "claims": [
+    {
+      "id": "tsla-giga-texas",
+      "ticker": "TSLA",
+      "company": "Tesla",
+      "site": "Gigafactory Texas, Austin TX",
+      "claim": "FY2020 10-K: Gigafactory Texas in Austin is under construction; FY2021 10-K: it will begin production in 2022.",
+      "claim_year": 2020,
+      "lat": 30.222,
+      "lon": -97.617,
+      "half_km": 1.0,
+      "filing": {
+        "years": [
+          2020,
+          2021,
+          2022
+        ],
+        "phrases": [
+          "Gigafactory Texas"
+        ]
+      }
+    },
+    {
+      "id": "intc-ohio-one",
+      "ticker": "INTC",
+      "company": "Intel",
+      "site": "Ohio One fabs, Licking County OH",
+      "claim": "FY2022 10-K: Intel broke ground on two new leading-edge chip factories in Ohio. FY2024 10-K: completion of the Ohio facility has been slowed.",
+      "claim_year": 2022,
+      "lat": 40.116,
+      "lon": -82.711,
+      "half_km": 1.0,
+      "filing": {
+        "years": [
+          2022,
+          2023,
+          2024
+        ],
+        "phrases": [
+          "Ohio"
+        ]
+      }
+    },
+    {
+      "id": "txn-sherman",
+      "ticker": "TXN",
+      "company": "Texas Instruments",
+      "site": "SM1 300-mm fab, Sherman TX",
+      "claim": "FY2022 10-K: TI started construction on SM1 and SM2 in Sherman, Texas. FY2024 10-K: equipping SM1, still building SM2.",
+      "claim_year": 2022,
+      "lat": 33.558,
+      "lon": -96.615,
+      "half_km": 0.8,
+      "filing": {
+        "years": [
+          2022,
+          2023,
+          2024
+        ],
+        "phrases": [
+          "Sherman"
+        ]
+      }
+    },
+    {
+      "id": "f-blueoval-city",
+      "ticker": "F",
+      "company": "Ford",
+      "site": "BlueOval City, Stanton TN",
+      "claim": "FY2022 10-K: Tennessee incentives for Ford's new EV assembly plant, and BlueOval SK battery plants in Tennessee that the joint venture will build. FY2024: the joint venture is building them. (The 10-Ks do not use the name BlueOval City.)",
+      "claim_year": 2022,
+      "lat": 35.424,
+      "lon": -89.424,
+      "half_km": 1.2,
+      "filing": {
+        "years": [
+          2022,
+          2023,
+          2024
+        ],
+        "phrases": [
+          "BlueOval City",
+          "Tennessee"
+        ]
+      }
+    },
+    {
+      "id": "gm-ultium-lordstown",
+      "ticker": "GM",
+      "company": "General Motors",
+      "site": "Ultium Cells battery plant, Lordstown OH",
+      "claim": "FY2020 10-K: GM has announced plans to mass-produce battery cells at Ultium Cells LLC in Lordstown, Ohio. Later 10-Ks give the location as Warren, Ohio.",
+      "claim_year": 2020,
+      "lat": 41.15,
+      "lon": -80.86,
+      "half_km": 0.8,
+      "filing": {
+        "years": [
+          2020,
+          2021,
+          2022
+        ],
+        "phrases": [
+          "Ultium Cells",
+          "Lordstown"
+        ]
+      }
+    },
+    {
+      "id": "lly-lebanon",
+      "ticker": "LLY",
+      "company": "Eli Lilly",
+      "site": "Lebanon manufacturing site, Boone County IN",
+      "claim": "FY2022 10-K: Lilly committed more than $2 billion to two new manufacturing facilities in Lebanon, Indiana. Later 10-Ks say only 'new facilities in Indiana'.",
+      "claim_year": 2022,
+      "lat": 40.098,
+      "lon": -86.497,
+      "half_km": 1.0,
+      "filing": {
+        "years": [
+          2022,
+          2023,
+          2024
+        ],
+        "phrases": [
+          "Lebanon",
+          "Indiana"
+        ]
+      }
+    },
+    {
+      "id": "xom-golden-pass",
+      "ticker": "XOM",
+      "company": "ExxonMobil",
+      "site": "Golden Pass LNG export terminal, Sabine Pass TX",
+      "claim": "Golden Pass LNG (ExxonMobil joint venture) took its investment decision in 2019 and is adding liquefaction trains at the existing import terminal. Not yet checked against the 10-K text: the filing step could not find ExxonMobil's 10-Ks in the SEC feed.",
+      "claim_year": 2019,
+      "lat": 29.755,
+      "lon": -93.92,
+      "half_km": 1.0,
+      "months": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "filing": {
+        "years": [
+          2019,
+          2020,
+          2023
+        ],
+        "phrases": [
+          "Golden Pass"
+        ]
+      }
+    },
+    {
+      "id": "so-vogtle-3-4",
+      "ticker": "SO",
+      "company": "Southern Company",
+      "site": "Plant Vogtle Units 3 and 4, Waynesboro GA",
+      "claim": "FY2023 10-K: Georgia Power placed Plant Vogtle Units 3 and 4 in service on July 31, 2023 and April 29, 2024. Construction began about 2013, before this archive, so this site is a control: it shows what 10 m imagery cannot see.",
+      "claim_year": 2023,
+      "lat": 33.14,
+      "lon": -81.775,
+      "half_km": 1.0,
+      "filing": {
+        "years": [
+          2023,
+          2024
+        ],
+        "phrases": [
+          "Vogtle Units 3 and 4"
+        ]
+      },
+      "control": true
+    }
+  ]
+}
