@@ -1,6 +1,8 @@
 // Serves muscoota.com/reed from D1. All the heavy work (filings, tagging,
 // notes) happens in scheduled GitHub Actions; this Worker only reads.
 
+import { writeup } from './writeup.js';
+
 const BASE = '/reed';
 
 export default {
@@ -10,6 +12,7 @@ export default {
     try {
       if (path === BASE || path === '/' || path === '') return html(await home(env));
       if (path === `${BASE}/method`) return html(method());
+      if (path === `${BASE}/eval`) return html(layout('How well does Reed work?', writeup(BASE)));
       if (path === `${BASE}/events.json`) return json(await recent(env, 50));
       if (path.startsWith(`${BASE}/event/`)) {
         const page = await eventPage(env, decodeURIComponent(path.slice(`${BASE}/event/`.length)));
@@ -46,7 +49,7 @@ async function home(env) {
   const { count } = (await env.DB.prepare('SELECT COUNT(*) AS count FROM filings').first()) ?? { count: 0 };
   const body = `
     <p class="lead">When a U.S. government action is published, Reed tags it and shows which large companies' own SEC filings describe exposure to that kind of action, quoting the passages.</p>
-    <p class="meta">${count} filings indexed from the S&amp;P 100. Sources: Federal Register, SEC EDGAR. <a href="${BASE}/method">How it works</a></p>
+    <p class="meta">${count} filings indexed from the S&amp;P 100. Sources: Federal Register, SEC EDGAR. <a href="${BASE}/method">How it works</a> · <a href="${BASE}/eval">How well it works</a></p>
     ${events.length === 0 ? '<p>No events yet. The first daily run fills this page.</p>' : events.map(eventBlock).join('')}`;
   return layout('Reed', body);
 }
@@ -86,7 +89,7 @@ function method() {
       <li>For relevant actions, Reed searches the Risk Factors sections of the latest 10-K and 10-Q filings of S&amp;P 100 companies, taken from <a href="https://www.sec.gov/edgar/search/">SEC EDGAR</a>.</li>
       <li>The model writes one or two sentences per company, using only those passages. A note is kept only if every passage it cites belongs to that company.</li>
     </ol>
-    <p>The model can miss companies or misread a passage. Each note links to the filing text so it can be checked.</p>
+    <p>The model can miss companies or misread a passage. Each note links to the filing text so it can be checked. <a href="${BASE}/eval">The first evaluation</a> measures how often this happens.</p>
     <h2>Not investment advice</h2>
     <p>Reed is a research project. It reports what companies say about themselves in public filings. It does not recommend buying or selling any security, rank companies, or predict prices.</p>
     <p><a href="${BASE}">Back to events</a></p>`);
@@ -112,6 +115,8 @@ ul.notes{list-style:none;padding:0;margin:12px 0 0}ul.notes>li{margin:0 0 14px}u
 details summary{cursor:pointer;color:var(--muted);font-size:14px}
 blockquote{margin:8px 0;padding:10px 12px;background:var(--quote);border-left:3px solid var(--rule);font-size:14px;overflow-wrap:anywhere}
 blockquote footer{margin-top:6px}
+.scroll{overflow-x:auto}table{border-collapse:collapse;font-size:14px;width:100%}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--rule);vertical-align:top}th{font-weight:600}
+ol li,ul li{margin-bottom:6px}
 .notice{margin-top:40px;border-top:1px solid var(--rule);padding-top:12px;color:var(--muted);font-size:13px}
 </style></head><body><main>
 <header><a class="home" href="${BASE}">Reed</a><a href="/">Muscoota</a></header>

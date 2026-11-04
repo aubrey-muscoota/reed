@@ -49,3 +49,12 @@ test('event page and JSON feed work; unknown paths 404', async () => {
   assert.equal(feed[0].notes[0].citations[0].form, '10-K');
   assert.equal((await worker.fetch(new Request('https://muscoota.com/reed/zzz'), env)).status, 404);
 });
+
+test('eval write-up page renders with its results table', async () => {
+  const res = await worker.fetch(new Request('https://muscoota.com/reed/eval'), env);
+  assert.equal(res.status, 200);
+  const body = await res.text();
+  assert.ok(body.includes('How well does Reed work?'));
+  assert.ok(body.includes('<td>Llama 3.3 70B</td><td>hybrid</td><td>62%</td><td>22</td><td>55%</td><td>12 of 57</td>'));
+  assert.ok(body.includes('Not investment advice'));
+});
