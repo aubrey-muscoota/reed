@@ -9,7 +9,7 @@ import { readFile } from 'node:fs/promises';
 import { cloudflare } from '../lib/cf.mjs';
 import { CONFIG } from '../lib/config.mjs';
 import { d1Id, db as openDb } from '../lib/db.mjs';
-import { tickerMap, submissions, latestFilings, filingUrl, riskFactors } from '../lib/sec.mjs';
+import { tickerMap, latestReports, filingUrl, riskFactors } from '../lib/sec.mjs';
 import { chunk } from '../lib/text.mjs';
 
 const { values: args } = parseArgs({
@@ -29,7 +29,8 @@ const dry = args['dry-run'];
 
 const cf = dry ? null : cloudflare();
 const db = dry ? null : openDb(cf, await d1Id(cf));
-const indexed = new Map(dry ? [] : (await db.all('SELECT accession, chunks FROM filings')).map(r => [r.accession, r.chunks]));
+const rows = dry ? [] : await db.all('SELECT accession, ticker, form, chunks FROM filings');
+const indexed = new Map(rows.map(r => [r.accession, r.chunks]));
 // With --reindex, filings re-done in an earlier run since this date are skipped, so the job can resume.
 const reindexedSince = args.reindex ? (process.env.REED_REINDEX_SINCE ?? new Date().toISOString().slice(0, 10)) : null;
 const done = new Set(dry ? [] : (await db.all(
@@ -44,9 +45,10 @@ const skipped = [];
 outer: for (const ticker of tickers) {
   const entry = map.get(ticker);
   if (!entry) { skipped.push(`${ticker}: no CIK`); continue; }
-  const filings = latestFilings(await submissions(entry.cik));
+  const filings = await latestReports(entry.cik);
+  if (!filings.some(f => f.form === '10-K')) skipped.push(`${ticker}: no 10-K found`);
   for (const f of filings) {
-    if (done.has(f.accession)) continue;
+    if (done.has(f.accession)) { if (!dry) await prune(ticker, f); continue; }
     const url = filingUrl(entry.cik, f);
     const text = await riskFactors(url);
     // 10-Qs often just point back to the 10-K; skip those stubs.
@@ -76,7 +78,19 @@ outer: for (const ticker of tickers) {
       'INSERT OR REPLACE INTO filings (accession, ticker, company, form, filed, url, chunks, ingested_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [f.accession, ticker, entry.company, f.form, f.filed, url, passages.length, new Date().toISOString()],
     );
+    await prune(ticker, f);
     embedded += passages.length;
+  }
+}
+
+// A newer filing of the same form replaces the older one: drop the older
+// one's passages and row, so search only sees each company's latest reports.
+async function prune(ticker, latest) {
+  for (const r of rows.filter(r => r.ticker === ticker && r.form === latest.form && r.accession !== latest.accession)) {
+    const ids = Array.from({ length: r.chunks }, (_, i) => `${r.accession}-${i}`);
+    for (let i = 0; i < ids.length; i += 100) await cf.vectorize.deleteByIds(CONFIG.index, ids.slice(i, i + 100));
+    await db.all('DELETE FROM filings WHERE accession = ?', [r.accession]);
+    console.log(`Pruned ${ticker} ${r.form} ${r.accession} (${r.chunks} passages)`);
   }
 }
 

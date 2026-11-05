@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       since: { description: 'Start date YYYY-MM-DD (default: 3 days ago)', required: false }
+      until: { description: 'End date YYYY-MM-DD (for backfills)', required: false }
       max: { description: 'Most events to tag', required: false, default: '8' }
       reprocess: { description: 'Clear and redo tags and notes in the window', type: boolean, default: false }
 permissions:
@@ -20,8 +21,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: node scripts/daily.mjs ${SINCE:+--since "$SINCE"} --max "${MAX:-8}" ${REPROCESS:+--reprocess}
+      - run: node scripts/daily.mjs ${SINCE:+--since "$SINCE"} ${UNTIL:+--until "$UNTIL"} --max "${MAX:-8}" ${REPROCESS:+--reprocess}
         env:
           REPROCESS: ${{ inputs.reprocess && '1' || '' }}
           SINCE: ${{ inputs.since }}
+          UNTIL: ${{ inputs.until }}
           MAX: ${{ inputs.max }}

@@ -1,0 +1,44 @@
+name: Backfill events
+# Tags past Federal Register actions month by month, using today's filings.
+# The site labels these events as added later. Resumable: tagged events are skipped.
+on:
+  workflow_dispatch:
+    inputs:
+      from: { description: 'First month YYYY-MM', required: true, default: '2025-01' }
+      to: { description: 'Last month YYYY-MM (default: this month)', required: false }
+      max: { description: 'Most events to tag per month', required: false, default: '1000' }
+permissions:
+  contents: read
+concurrency: reed-data
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      FROM: ${{ inputs.from }}
+      TO: ${{ inputs.to }}
+      MAX: ${{ inputs.max }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Backfill
+        run: |
+          [[ "$FROM" =~ ^[0-9]{4}-[0-9]{2}$ ]] || { echo "Bad from: $FROM"; exit 1; }
+          TO="${TO:-$(date -u +%Y-%m)}"
+          [[ "$TO" =~ ^[0-9]{4}-[0-9]{2}$ ]] || { echo "Bad to: $TO"; exit 1; }
+          m="$FROM"
+          while [[ ! "$m" > "$TO" ]]; do
+            last=$(date -u -d "$m-01 +1 month -1 day" +%F)
+            echo "::group::$m"
+            node scripts/daily.mjs --since "$m-01" --until "$last" --max "${MAX:-1000}" | tee -a summary.txt
+            echo "::endgroup::"
+            m=$(date -u -d "$m-01 +1 month" +%Y-%m)
+          done
+          {
+            echo "### Backfill $FROM to $TO"
+            echo "Tagged relevant with notes: $(grep -c '^+ ' summary.txt || true)"
+            echo "Not relevant or routine: $(grep -c '^- ' summary.txt || true)"
+          } >> "$GITHUB_STEP_SUMMARY"

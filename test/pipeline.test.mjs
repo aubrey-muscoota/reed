@@ -68,3 +68,18 @@ test('parseJson skips reasoning in think tags', () => {
   assert.deepEqual(parseJson('<think>maybe {"x": 1}?</think>\n{"category": "tax"}'), { category: 'tax' });
   assert.deepEqual(parseJson('thinking about {"no": 1}...</think>{"ok": true}'), { ok: true });
 });
+
+test('capPerFiling keeps the best passages from each filing, in score order', async () => {
+  const { capPerFiling } = await import('../lib/pipeline.mjs');
+  const m = [
+    { id: '0000320193-25-000079-3', score: 0.9 },
+    { id: '0000320193-25-000079-7', score: 0.8 },
+    { id: '0000320193-25-000079-1', score: 0.85 },
+    { id: '0001045810-26-000010-0', score: 0.7 },
+  ];
+  assert.deepEqual(capPerFiling(m, 2).map(x => x.id), ['0000320193-25-000079-3', '0000320193-25-000079-1', '0001045810-26-000010-0']);
+});
+
+test('parseJson tolerates a trailing comma', () => {
+  assert.deepEqual(parseJson('{"notes": [{"citations": [9]},\n]}'), { notes: [{ citations: [9] }] });
+});
