@@ -7,7 +7,7 @@
 
 import { parseArgs } from 'node:util';
 import { readFile } from 'node:fs/promises';
-import { tickerMap, submissions, latestFilings, filingUrl, riskFactors, secText } from '../lib/sec.mjs';
+import { tickerMap, latestReports, filingUrl, riskFactors, secText } from '../lib/sec.mjs';
 
 const { values: args } = parseArgs({ options: { set: { type: 'string', default: 'eval/events.jsonl' } } });
 const events = (await readFile(args.set, 'utf8')).split('\n').filter(Boolean).map(l => JSON.parse(l));
@@ -19,7 +19,7 @@ const rawText = new Map();
 for (const t of tickers) {
   const entry = map.get(t);
   if (!entry) continue;
-  const [k] = latestFilings(await submissions(entry.cik), ['10-K']);
+  const k = (await latestReports(entry.cik)).find(f => f.form === '10-K');
   if (!k) continue;
   try {
     const url = filingUrl(entry.cik, k);
