@@ -57,7 +57,7 @@ for (const model of models) {
     const pairs = ok.reduce((n, r) => n + byId.get(r.event).expected.length, 0);
     const s = Object.fromEntries(Object.entries(METRICS).map(([k, f]) => [k, f(ok, m)]));
     const c = Object.fromEntries(['recall', 'pairs', 'precision'].map(k => [k, interval(ok, rs => METRICS[k](rs, m))]));
-    json.push({ model, mode: m, events: ok.length, errors: all.length - ok.length, tag: mean(ok.map(r => (r.tagCorrect ? 1 : 0))), found, pairs, ...s, ci: c });
+    json.push({ model, mode: m, events: ok.length, errors: all.length - ok.length, tag: mean(ok.map(r => (r.tagCorrect ? 1 : 0))), found, pairTotal: pairs, ...s, ci: c });
     out.push(`| ${model.split('/').pop()} | ${m} | ${ok.length} | ${all.length - ok.length} | ${fmt(mean(ok.map(r => (r.tagCorrect ? 1 : 0))))} | ${fmt(s.recall)} (${ci(c.recall)}) | ${fmt(s.pairs)} (${ci(c.pairs)}) | ${found} of ${pairs} | ${fmt(s.published, false)} | ${fmt(s.precision)} (${ci(c.precision)}) | ${fmt(s.supported)} |`);
   }
 }
