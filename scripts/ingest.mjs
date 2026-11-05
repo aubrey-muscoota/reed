@@ -9,7 +9,7 @@ import { readFile } from 'node:fs/promises';
 import { cloudflare } from '../lib/cf.mjs';
 import { CONFIG } from '../lib/config.mjs';
 import { d1Id, db as openDb } from '../lib/db.mjs';
-import { tickerMap, latestReports, filingUrl, riskFactors } from '../lib/sec.mjs';
+import { tickerMap, latestReports, submissions, filingUrl, riskFactors } from '../lib/sec.mjs';
 import { chunk } from '../lib/text.mjs';
 
 const { values: args } = parseArgs({
@@ -46,7 +46,11 @@ outer: for (const ticker of tickers) {
   const entry = map.get(ticker);
   if (!entry) { skipped.push(`${ticker}: no CIK`); continue; }
   const filings = await latestReports(entry.cik);
-  if (!filings.some(f => f.form === '10-K')) skipped.push(`${ticker}: no 10-K found`);
+  if (!filings.some(f => f.form === '10-K')) {
+    const subs = await submissions(entry.cik);
+    const forms = [...new Set(subs.filings.recent.form)].slice(0, 30).join(',');
+    skipped.push(`${ticker}: no 10-K found (CIK ${entry.cik}, ${subs.filings.recent.form.length} recent filings, forms ${forms}, ${subs.filings.files?.length ?? 0} older pages)`);
+  }
   for (const f of filings) {
     if (done.has(f.accession)) { if (!dry) await prune(ticker, f); continue; }
     const url = filingUrl(entry.cik, f);
