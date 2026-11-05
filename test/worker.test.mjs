@@ -32,7 +32,7 @@ const env = {
       { id: '2026-01234', title: 'Export controls <on> chips', url: 'https://www.federalregister.gov/d/2026-01234', published: '2026-11-02', category: 'export controls', agencies: '["Industry and Security Bureau"]', processed_at: '2026-11-03T14:00:00Z' },
       { id: '2025-00500', title: 'Steel tariffs', url: 'https://www.federalregister.gov/d/2025-00500', published: '2025-02-11', category: 'tariffs and trade', agencies: '[]', processed_at: '2026-11-05T02:00:00Z' },
     ],
-    notes: [{ event_id: '2026-01234', ticker: 'NVDA', company: 'NVIDIA CORP', summary: 'NVIDIA says controls limit sales.', citations: '[{"text":"quoted","url":"https://www.sec.gov/x","form":"10-K","filed":"2026-02-20","section":"Item 1A. Risk Factors"}]' }],
+    notes: [{ event_id: '2025-00500', ticker: 'F', company: 'FORD MOTOR CO', summary: 'Ford says steel tariffs raise costs.', citations: '[]' }, { event_id: '2026-01234', ticker: 'NVDA', company: 'NVIDIA CORP', summary: 'NVIDIA says controls limit sales.', citations: '[{"text":"quoted","url":"https://www.sec.gov/x","form":"10-K","filed":"2026-02-20","section":"Item 1A. Risk Factors"}]' }],
   }),
 };
 
@@ -72,6 +72,7 @@ test('month pages list that month and label backfilled events', async () => {
   assert.ok(body.includes('Steel tariffs'));
   assert.ok(!body.includes('Export controls'));
   assert.ok(body.includes('Added 2026-11-05 using filings current then'));
+  assert.ok(body.includes('1 action with company notes'));
   assert.equal((await worker.fetch(new Request('https://muscoota.com/reed/month/2024-01'), env)).status, 404);
 });
 

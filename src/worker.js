@@ -75,7 +75,10 @@ async function home(env) {
 async function monthPage(env, month) {
   const events = await recent(env, 500, month);
   if (events.length === 0) return null;
-  return layout(monthName(month), `<p class="meta">${events.length} actions. <a href="${BASE}">Latest</a></p>${events.map(e => eventBlock(e)).join('')}`);
+  // Archive pages show actions with at least one company note; the rest are counted.
+  const shown = events.filter(e => e.notes.length > 0);
+  const rest = events.length - shown.length;
+  return layout(monthName(month), `<p class="meta">${shown.length} ${shown.length === 1 ? "action" : "actions"} with company notes${rest ? `, and ${rest} more tagged relevant where no filing passage was specific enough` : ''}. <a href="${BASE}">Latest</a></p>${shown.map(e => eventBlock(e)).join('')}`);
 }
 
 function monthName(m) {
