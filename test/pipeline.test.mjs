@@ -83,3 +83,14 @@ test('capPerFiling keeps the best passages from each filing, in score order', as
 test('parseJson tolerates a trailing comma', () => {
   assert.deepEqual(parseJson('{"notes": [{"citations": [9]},\n]}'), { notes: [{ citations: [9] }] });
 });
+
+import { latestReports } from '../lib/sec.mjs';
+test('latestReports falls back to the predecessor CIK for the 10-K', async () => {
+  const sub = (forms) => ({ filings: { recent: { form: forms, accessionNumber: forms.map((_, i) => `0000-${i}`), filingDate: forms.map(() => '2026-02-01'), reportDate: forms.map(() => '2025-12-31'), primaryDocument: forms.map(() => 'x.htm') }, files: [] } });
+  const fake = async url => ({ ok: true, json: async () => (url.includes('CIK0002115436') ? sub(['8-K12B', '10-Q']) : sub(['10-K'])) });
+  const found = await latestReports(2115436, fake);
+  const k = found.find(f => f.form === '10-K');
+  assert.equal(k.cik, 34088);
+  assert.ok(filingUrl(2115436, k).includes('/data/34088/'));
+  assert.equal(found.find(f => f.form === '10-Q').cik, undefined);
+});
