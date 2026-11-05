@@ -12,7 +12,7 @@ export default {
     try {
       if (path === BASE || path === '/' || path === '') return html(await home(env));
       if (path === `${BASE}/method`) return html(method());
-      if (path === `${BASE}/eval`) return html(layout('How well does Reed work?', writeup(BASE)));
+      if (path === `${BASE}/eval`) return html(layout('How well does Reed work?', writeup(BASE), 'eval'));
       if (path === `${BASE}/events.json`) return json(await recent(env, 50));
       const month = path.match(new RegExp(`^${BASE}/month/(\\d{4}-\\d{2})$`));
       if (month) {
@@ -66,10 +66,10 @@ async function home(env) {
   ).all();
   const body = `
     <p class="lead">When a U.S. government action is published, Reed tags it and shows which large companies' own SEC filings describe exposure to that kind of action, quoting the passages.</p>
-    <p class="meta">${count} filings indexed from the S&amp;P 100. Sources: Federal Register, SEC EDGAR. <a href="${BASE}/method">How it works</a> · <a href="${BASE}/eval">How well it works</a></p>
+    <p class="meta">${count} filings indexed from the S&amp;P 100. Sources: Federal Register, SEC EDGAR.</p>
     ${events.length === 0 ? '<p>No events yet. The first daily run fills this page.</p>' : events.map(e => eventBlock(e)).join('')}
     ${months.length ? `<nav class="months"><h2>By month</h2>${months.map(m => `<a href="${BASE}/month/${esc(m.month)}">${monthName(m.month)}</a> <span class="tk">${m.n}</span>`).join(' · ')}</nav>` : ''}`;
-  return layout('Reed', body);
+  return layout('Reed', body, 'events');
 }
 
 async function monthPage(env, month) {
@@ -78,7 +78,7 @@ async function monthPage(env, month) {
   // Archive pages show actions with at least one company note; the rest are counted.
   const shown = events.filter(e => e.notes.length > 0);
   const rest = events.length - shown.length;
-  return layout(monthName(month), `<p class="meta">${shown.length} ${shown.length === 1 ? "action" : "actions"} with company notes${rest ? `, and ${rest} more tagged relevant where no filing passage was specific enough` : ''}. <a href="${BASE}">Latest</a></p>${shown.map(e => eventBlock(e)).join('')}`);
+  return layout(monthName(month), `<p class="meta">${shown.length} ${shown.length === 1 ? "action" : "actions"} with company notes${rest ? `, and ${rest} more tagged relevant where no filing passage was specific enough` : ''}. <a href="${BASE}">Latest</a></p>${shown.map(e => eventBlock(e)).join('')}`, 'events');
 }
 
 function monthName(m) {
@@ -100,7 +100,7 @@ async function eventPage(env, id) {
   if (!e) return null;
   const { results: notes } = await env.DB.prepare('SELECT ticker, company, summary, citations FROM notes WHERE event_id = ? ORDER BY ticker').bind(id).all();
   const full = { ...e, agencies: safeJson(e.agencies, []), notes: notes.map(n => ({ ...n, citations: safeJson(n.citations, []) })) };
-  return layout(e.title, `${eventBlock(full, true)}<p><a href="${BASE}">All events</a></p>`);
+  return layout(e.title, `${eventBlock(full, true)}<p><a href="${BASE}">All events</a></p>`, 'events');
 }
 
 function eventBlock(e, open = false) {
@@ -133,39 +133,65 @@ function method() {
     <p>The model can miss companies or misread a passage. Each note links to the filing text so it can be checked. <a href="${BASE}/eval">The first evaluation</a> measures how often this happens.</p>
     <h2>Not investment advice</h2>
     <p>Reed is a research project. It reports what companies say about themselves in public filings. It does not recommend buying or selling any security, rank companies, or predict prices.</p>
-    <p><a href="${BASE}">Back to events</a></p>`);
+`, 'method');
 }
 
-function layout(title, body) {
+const MARK = `<svg aria-hidden="true" viewBox="0 0 32 32"><g fill="none" stroke-width="1.5" stroke-linecap="round"><path stroke="currentColor" d="M6.7 5.4V10.6M9.3 5.4V10.6M5.4 14.7H10.6M5.4 17.3H10.6M6.7 21.4V26.6M9.3 21.4V26.6M13.4 6.7H18.6M13.4 9.3H18.6M14.7 13.4V18.6M17.3 13.4V18.6M13.4 22.7H18.6M13.4 25.3H18.6M22.7 5.4V10.6M25.3 5.4V10.6M22.7 21.4V26.6M25.3 21.4V26.6"/><path stroke="#CC785C" d="M21.4 14.7H26.6M21.4 17.3H26.6"/></g></svg>`;
+const FAVICON = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%23F3F0E8'/%3E%3Cg%20fill='none'%20stroke-width='1.5'%20stroke-linecap='round'%3E%3Cpath%20stroke='%23191917'%20d='M6.7%205.4V10.6M9.3%205.4V10.6M5.4%2014.7H10.6M5.4%2017.3H10.6M6.7%2021.4V26.6M9.3%2021.4V26.6M13.4%206.7H18.6M13.4%209.3H18.6M14.7%2013.4V18.6M17.3%2013.4V18.6M13.4%2022.7H18.6M13.4%2025.3H18.6M22.7%205.4V10.6M25.3%205.4V10.6M22.7%2021.4V26.6M25.3%2021.4V26.6'/%3E%3Cpath%20stroke='%23CC785C'%20d='M21.4%2014.7H26.6M21.4%2017.3H26.6'/%3E%3C/g%3E%3C/svg%3E";
+const NAV = [['events', '', 'Events'], ['method', '/method', 'How it works'], ['eval', '/eval', 'Results']];
+
+// Every page shares the Muscoota site header, plus Reed's own section nav.
+// `active` is one of the NAV keys, or empty.
+function layout(title, body, active = '') {
+  const nav = NAV.map(([key, href, label]) =>
+    `<a href="${BASE}${href}"${key === active ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   return `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(title)}${title === 'Reed' ? ' · Muscoota' : ' · Reed'}</title>
+<title>${esc(title)}${title === 'Reed' ? ' · Muscoota Ventures' : ' · Reed'}</title>
 <meta name="description" content="Which companies' SEC filings describe exposure to new U.S. government actions. A Muscoota research project.">
+<meta name="theme-color" content="#F3F0E8">
+<link rel="icon" href="${FAVICON}">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fbfbf9;--fg:#1d1d1b;--muted:#6b6b66;--rule:#e2e2dc;--quote:#f1f1ec;--link:#1d4f73}
-@media (prefers-color-scheme:dark){:root{--bg:#141413;--fg:#ececea;--muted:#9a9a94;--rule:#2c2c2a;--quote:#1d1d1b;--link:#8cbbe0}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
-main{max-width:720px;margin:0 auto;padding:40px 16px 80px}a{color:var(--link)}
-header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--rule);padding-bottom:12px;margin-bottom:24px}
-header a{color:var(--fg);text-decoration:none}header .home{font-weight:600}
-h1{font-size:22px;margin:0 0 8px}h2{font-size:18px;margin:4px 0 6px;line-height:1.35}h2 a{color:var(--fg);text-decoration:none}
-.lead{font-size:17px}.meta,.src,.none,footer{color:var(--muted);font-size:14px}
+:root{--bg:#F3F0E8;--fg:#191917;--fg2:#3D3B36;--muted:#7A766C;--rule:rgba(25,25,23,.12);--quote:#EAE6DB;--link:#2F6770;--accent:#CC785C;
+--sans:'Geist',ui-sans-serif,system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;--mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#191917;--fg:#F3F0E8;--fg2:#D6D2C8;--muted:#9A958A;--rule:rgba(243,240,232,.14);--quote:#23221F;--link:#8FC3CB}}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--link)}
+.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px 28px;max-width:960px;margin:0 auto;padding:22px 16px 18px;border-bottom:1px solid var(--rule)}
+.crumb{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:500;letter-spacing:-.01em}
+.crumb a{color:var(--fg);text-decoration:none}.crumb .mark{display:inline-flex;align-items:center;gap:10px}.crumb svg{width:22px;height:22px}
+.crumb .sep{color:var(--muted);font-weight:300}
+.sub{display:flex;gap:22px;font-size:14px}.sub a{color:var(--fg2);text-decoration:none;padding:4px 0;border-bottom:1px solid transparent}
+.sub a:hover{border-color:var(--rule)}.sub a[aria-current]{color:var(--fg);border-color:var(--accent)}
+main{max-width:720px;margin:0 auto;padding:36px 16px 64px}
+h1{font-size:26px;font-weight:500;letter-spacing:-.015em;line-height:1.25;margin:0 0 10px}
+h2{font-size:18px;font-weight:500;margin:4px 0 6px;line-height:1.35}h2 a{color:var(--fg);text-decoration:none}h2 a:hover{text-decoration:underline}
+.lead{font-size:17px;color:var(--fg2)}.meta,.src,.none{color:var(--muted);font-size:14px}
 article{border-top:1px solid var(--rule);padding:20px 0}
 ul.notes{list-style:none;padding:0;margin:12px 0 0}ul.notes>li{margin:0 0 14px}ul.notes p{margin:2px 0 4px}
-.tk{color:var(--muted);font-size:13px;margin-left:4px}
+.tk{color:var(--muted);font:13px var(--mono);margin-left:4px}
 details summary{cursor:pointer;color:var(--muted);font-size:14px}
 blockquote{margin:8px 0;padding:10px 12px;background:var(--quote);border-left:3px solid var(--rule);font-size:14px;overflow-wrap:anywhere}
-blockquote footer{margin-top:6px}
-.scroll{overflow-x:auto}table{border-collapse:collapse;font-size:14px;width:100%}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--rule);vertical-align:top}th{font-weight:600}
+blockquote footer{margin-top:6px;color:var(--muted)}
+.scroll{overflow-x:auto}table{border-collapse:collapse;font-size:14px;width:100%}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--rule);vertical-align:top}th{font-weight:500}
 ol li,ul li{margin-bottom:6px}
 .months{margin-top:32px;border-top:1px solid var(--rule);padding-top:12px;font-size:14px;line-height:2}.later{font-style:italic}
-.notice{margin-top:40px;border-top:1px solid var(--rule);padding-top:12px;color:var(--muted);font-size:13px}
-</style></head><body><main>
-<header><a class="home" href="${BASE}">Reed</a><a href="/">Muscoota</a></header>
+.foot{max-width:960px;margin:0 auto;padding:16px 16px 28px;border-top:1px solid var(--rule);display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;color:var(--muted);font-size:12px}
+.foot a{color:var(--muted)}
+@media (max-width:600px){.sub{gap:18px;width:100%}}
+</style></head><body>
+<header class="top">
+<div class="crumb"><a class="mark" href="/" aria-label="Muscoota Ventures home">${MARK}<span>Muscoota Ventures</span></a><span class="sep">/</span><a href="${BASE}">Reed</a></div>
+<nav class="sub" aria-label="Reed">${nav}</nav>
+</header>
+<main>
 ${title === 'Reed' ? '' : `<h1>${esc(title)}</h1>`}
 ${body}
-<p class="notice">Research and education only. Not investment advice.</p>
-</main></body></html>`;
+</main>
+<footer class="foot"><span>Research and education only. Not investment advice.</span><span class="mono"><a href="/">Muscoota Ventures</a> · <a href="https://github.com/aubrey-muscoota/reed">Source</a></span></footer>
+</body></html>`;
 }
 
 function html(body, status = 200) {
