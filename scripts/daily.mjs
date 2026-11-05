@@ -58,7 +58,7 @@ for (const e of queue) {
       [tag.category, JSON.stringify(tag.keywords), tag.relevant ? 1 : 0, CONFIG.model, new Date().toISOString(), e.id]);
     if (!tag.relevant) { console.log(`- ${e.id} ${tag.routine ? 'routine' : 'not relevant'}: ${e.title}`); continue; }
 
-    const passages = await retrieve(cf, e, tag, 'dense');
+    const passages = await retrieve(cf, e, tag, CONFIG.retrieval);
     const notes = await checkSpecific(cf, e, await explain(cf, e, passages.slice(0, CONFIG.notePassages)));
     for (const n of notes) {
       await db.all('INSERT OR REPLACE INTO notes (event_id, ticker, company, summary, citations, model, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
