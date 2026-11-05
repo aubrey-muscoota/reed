@@ -1,7 +1,7 @@
 // Serves muscoota.com/reed from D1. All the heavy work (filings, tagging,
 // notes) happens in scheduled GitHub Actions; this Worker only reads.
 
-import { writeup } from './writeup.js';
+import { writeup, STUDY } from './writeup.js';
 
 const BASE = '/reed';
 
@@ -12,7 +12,7 @@ export default {
     try {
       if (path === BASE || path === '/' || path === '') return html(await home(env));
       if (path === `${BASE}/method`) return html(method());
-      if (path === `${BASE}/eval`) return html(layout('How well does Reed work?', writeup(BASE), 'eval'));
+      if (path === `${BASE}/eval`) return html(layout(STUDY.title, writeup(BASE), 'eval'));
       if (path === `${BASE}/events.json`) return json(await recent(env, 50));
       const month = path.match(new RegExp(`^${BASE}/month/(\\d{4}-\\d{2})$`));
       if (month) {
@@ -126,8 +126,8 @@ function method() {
   return layout('How Reed works', `
     <ol>
       <li>Each day, Reed pulls new presidential documents, significant rules, and trade and sanctions actions from the <a href="https://www.federalregister.gov/developers/documentation/api/v1">Federal Register API</a>.</li>
-      <li>An open-weight model running on Cloudflare Workers AI tags each action by topic and decides whether it could matter to large U.S. companies.</li>
-      <li>For relevant actions, Reed searches the Risk Factors sections of the latest 10-K and 10-Q filings of S&amp;P 100 companies, taken from <a href="https://www.sec.gov/edgar/search/">SEC EDGAR</a>.</li>
+      <li>An open-weight model running on Cloudflare Workers AI (currently Mistral Small 3.1 24B, chosen in <a href="${BASE}/eval">the evaluation</a>) tags each action by topic and decides whether it could matter to large U.S. companies.</li>
+      <li>For relevant actions, Reed searches, by meaning and then by keyword, the Risk Factors sections of the latest 10-K and 10-Q filings of S&amp;P 100 companies, taken from <a href="https://www.sec.gov/edgar/search/">SEC EDGAR</a>.</li>
       <li>The model writes one or two sentences per company, using only those passages. A note is kept only if every passage it cites belongs to that company.</li>
     </ol>
     <p>The model can miss companies or misread a passage. Each note links to the filing text so it can be checked. <a href="${BASE}/eval">The first evaluation</a> measures how often this happens.</p>
@@ -177,6 +177,13 @@ blockquote{margin:8px 0;padding:10px 12px;background:var(--quote);border-left:3p
 blockquote footer{margin-top:6px;color:var(--muted)}
 .scroll{overflow-x:auto}table{border-collapse:collapse;font-size:14px;width:100%}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--rule);vertical-align:top}th{font-weight:500}
 ol li,ul li{margin-bottom:6px}
+.byline{color:var(--muted);font-size:14px;margin:0 0 24px}
+.abstract{background:var(--quote);padding:4px 20px 8px;margin:0 0 28px;border-radius:2px}.abstract p{font-size:15px}
+h3{font-size:16px;font-weight:500;margin:20px 0 4px}
+figure{margin:24px 0}figure.wide{width:min(960px,calc(100vw - 32px));margin-left:calc(50% - min(480px,50vw - 16px))}.nowrap td:first-child{white-space:nowrap}figcaption{font-size:14px;color:var(--fg2);margin-bottom:8px}figcaption strong{color:var(--fg)}
+td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.ci{color:var(--muted);font-size:12px;margin-left:4px}
+tr.grp td{border-top:1px solid var(--muted)}sup{color:var(--muted);font-size:10px;margin-left:2px}
+.history li{font-size:14px}
 .months{margin-top:32px;border-top:1px solid var(--rule);padding-top:12px;font-size:14px;line-height:2}.later{font-style:italic}
 .foot{max-width:960px;margin:0 auto;padding:16px 16px 28px;border-top:1px solid var(--rule);display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;color:var(--muted);font-size:12px}
 .foot a{color:var(--muted)}

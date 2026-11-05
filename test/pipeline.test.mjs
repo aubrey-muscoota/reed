@@ -79,3 +79,7 @@ test('capPerFiling keeps the best passages from each filing, in score order', as
   ];
   assert.deepEqual(capPerFiling(m, 2).map(x => x.id), ['0000320193-25-000079-3', '0000320193-25-000079-1', '0001045810-26-000010-0']);
 });
+
+test('parseJson tolerates a trailing comma', () => {
+  assert.deepEqual(parseJson('{"notes": [{"citations": [9]},\n]}'), { notes: [{ citations: [9] }] });
+});

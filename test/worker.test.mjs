@@ -58,8 +58,11 @@ test('eval write-up page renders with its results table', async () => {
   const res = await worker.fetch(new Request('https://muscoota.com/reed/eval'), env);
   assert.equal(res.status, 200);
   const body = await res.text();
-  assert.ok(body.includes('How well does Reed work?'));
-  assert.ok(body.includes('<td>Llama 3.3 70B</td><td>hybrid</td><td>62%</td><td>22</td><td>55%</td><td>12 of 57</td>'));
+  assert.ok(body.includes('Matching U.S. government actions'));
+  assert.ok(body.includes('Last updated'));
+  assert.match(body, /<td>Mistral Small 3\.1 24B<\/td><td>dense<\/td>/);
+  assert.match(body, /<td><\/td><td>hybrid<\/td><td class="n">44<sup>1<\/sup><\/td>/);
+  assert.equal((body.match(/<tr/g) || []).length, 1 + 12 + 1 + 8 + 1 + 7);
   assert.ok(body.includes('Not investment advice'));
 });
 
