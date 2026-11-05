@@ -4,6 +4,8 @@ on:
     inputs:
       set: { description: 'Event set', required: false, default: 'eval/events.jsonl' }
       limit: { description: 'Only the first N events', required: false }
+      models: { description: 'Comma-separated models (default: all four)', required: false }
+      modes: { description: 'Retrieval modes', required: false, default: 'dense,hybrid,diverse' }
       check_only: { description: 'Only check the set against 10-K text (no models)', type: boolean, default: false }
 permissions:
   contents: read
@@ -24,8 +26,10 @@ jobs:
           SET: ${{ inputs.set }}
           REED_DEBUG: '1'
       - if: ${{ !inputs.check_only }}
-        run: node scripts/eval.mjs --set "${SET:-eval/events.jsonl}" ${LIMIT:+--limit "$LIMIT"}
+        run: node scripts/eval.mjs --set "${SET:-eval/events.jsonl}" ${LIMIT:+--limit "$LIMIT"} ${MODELS:+--models "$MODELS"} --modes "${MODES:-dense,hybrid,diverse}"
         env:
+          MODELS: ${{ inputs.models }}
+          MODES: ${{ inputs.modes }}
           SET: ${{ inputs.set }}
           LIMIT: ${{ inputs.limit }}
       - if: ${{ !inputs.check_only }}
