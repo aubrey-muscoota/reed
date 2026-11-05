@@ -1,7 +1,10 @@
 // Daily run: pull new Federal Register actions, tag them, and write
 // filings-backed exposure notes for the relevant ones.
 //
-//   node scripts/daily.mjs [--since 2026-11-01] [--max 8]
+//   node scripts/daily.mjs [--since 2026-11-01] [--until 2026-11-30] [--max 8]
+//
+// With --until, this also backfills past months. Backfilled notes use the
+// filings indexed today, and the site labels them as added later.
 
 import { parseArgs } from 'node:util';
 import { cloudflare } from '../lib/cf.mjs';
@@ -13,6 +16,7 @@ import { tagEvent, retrieve, explain, checkSpecific } from '../lib/pipeline.mjs'
 const { values: args } = parseArgs({
   options: {
     since: { type: 'string' },
+    until: { type: 'string' },
     max: { type: 'string', default: String(CONFIG.maxEventsPerDay) },
     // Clear tags and notes for events in the window and redo them.
     reprocess: { type: 'boolean', default: false },
@@ -24,17 +28,18 @@ const cf = cloudflare();
 const db = openDb(cf, await d1Id(cf));
 
 if (args.reprocess) {
-  await db.all('DELETE FROM notes WHERE event_id IN (SELECT id FROM events WHERE published >= ?)', [since]);
-  await db.all('UPDATE events SET processed_at = NULL, relevant = NULL WHERE published >= ?', [since]);
+  const until = args.until ?? '9999-12-31';
+  await db.all('DELETE FROM notes WHERE event_id IN (SELECT id FROM events WHERE published >= ? AND published <= ?)', [since, until]);
+  await db.all('UPDATE events SET processed_at = NULL, relevant = NULL WHERE published >= ? AND published <= ?', [since, until]);
   console.log(`Cleared tags and notes since ${since}`);
 }
 
-const events = await recentEvents(since);
+const events = await recentEvents(since, args.until);
 // "Done" means tagged. Stored-but-untagged actions (over the cap, or a
 // failed run) get picked up on the next run while still in the window.
 const done = new Set((await db.all('SELECT id FROM events WHERE published >= ? AND processed_at IS NOT NULL', [since])).map(r => r.id));
 const fresh = events.filter(e => !done.has(e.id));
-console.log(`${events.length} actions since ${since}, ${fresh.length} not yet tagged`);
+console.log(`${events.length} actions from ${since}${args.until ? ` to ${args.until}` : ''}, ${fresh.length} not yet tagged`);
 
 // Store every action seen, then tag up to --max.
 for (const e of fresh) {

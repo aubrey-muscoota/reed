@@ -14,6 +14,11 @@ export default {
       if (path === `${BASE}/method`) return html(method());
       if (path === `${BASE}/eval`) return html(layout('How well does Reed work?', writeup(BASE)));
       if (path === `${BASE}/events.json`) return json(await recent(env, 50));
+      const month = path.match(new RegExp(`^${BASE}/month/(\\d{4}-\\d{2})$`));
+      if (month) {
+        const page = await monthPage(env, month[1]);
+        return page ? html(page) : html(layout('Not found', '<p>No events that month.</p>'), 404);
+      }
       if (path.startsWith(`${BASE}/event/`)) {
         const page = await eventPage(env, decodeURIComponent(path.slice(`${BASE}/event/`.length)));
         return page ? html(page) : html(layout('Not found', '<p>No such event.</p>'), 404);
@@ -26,17 +31,26 @@ export default {
   },
 };
 
-async function recent(env, limit) {
+async function recent(env, limit, month) {
   const { results: events } = await env.DB.prepare(
-    `SELECT id, title, url, published, category, agencies FROM events
-     WHERE relevant = 1 ORDER BY published DESC, id DESC LIMIT ?`,
-  ).bind(limit).all();
+    `SELECT id, title, url, published, category, agencies, processed_at FROM events
+     WHERE relevant = 1 ${month ? "AND substr(published, 1, 7) = ?" : ''} ORDER BY published DESC, id DESC LIMIT ?`,
+  ).bind(...(month ? [month, limit] : [limit])).all();
+  return withNotes(env, events);
+}
+
+async function withNotes(env, events) {
   if (events.length === 0) return [];
-  const ids = events.map(e => e.id);
-  const { results: notes } = await env.DB.prepare(
-    `SELECT event_id, ticker, company, summary, citations FROM notes
-     WHERE event_id IN (${ids.map(() => '?').join(',')}) ORDER BY ticker`,
-  ).bind(...ids).all();
+  // D1 allows at most 100 bound parameters per query.
+  const notes = [];
+  for (let i = 0; i < events.length; i += 90) {
+    const ids = events.slice(i, i + 90).map(e => e.id);
+    const { results } = await env.DB.prepare(
+      `SELECT event_id, ticker, company, summary, citations FROM notes
+       WHERE event_id IN (${ids.map(() => '?').join(',')}) ORDER BY ticker`,
+    ).bind(...ids).all();
+    notes.push(...results);
+  }
   return events.map(e => ({
     ...e,
     agencies: safeJson(e.agencies, []),
@@ -47,15 +61,39 @@ async function recent(env, limit) {
 async function home(env) {
   const events = await recent(env, 30);
   const { count } = (await env.DB.prepare('SELECT COUNT(*) AS count FROM filings').first()) ?? { count: 0 };
+  const { results: months } = await env.DB.prepare(
+    `SELECT substr(published, 1, 7) AS month, COUNT(*) AS n FROM events WHERE relevant = 1 GROUP BY month ORDER BY month DESC`,
+  ).all();
   const body = `
     <p class="lead">When a U.S. government action is published, Reed tags it and shows which large companies' own SEC filings describe exposure to that kind of action, quoting the passages.</p>
     <p class="meta">${count} filings indexed from the S&amp;P 100. Sources: Federal Register, SEC EDGAR. <a href="${BASE}/method">How it works</a> · <a href="${BASE}/eval">How well it works</a></p>
-    ${events.length === 0 ? '<p>No events yet. The first daily run fills this page.</p>' : events.map(eventBlock).join('')}`;
+    ${events.length === 0 ? '<p>No events yet. The first daily run fills this page.</p>' : events.map(e => eventBlock(e)).join('')}
+    ${months.length ? `<nav class="months"><h2>By month</h2>${months.map(m => `<a href="${BASE}/month/${esc(m.month)}">${monthName(m.month)}</a> <span class="tk">${m.n}</span>`).join(' · ')}</nav>` : ''}`;
   return layout('Reed', body);
 }
 
+async function monthPage(env, month) {
+  const events = await recent(env, 500, month);
+  if (events.length === 0) return null;
+  return layout(monthName(month), `<p class="meta">${events.length} actions. <a href="${BASE}">Latest</a></p>${events.map(e => eventBlock(e)).join('')}`);
+}
+
+function monthName(m) {
+  const [y, mo] = m.split('-').map(Number);
+  return `${['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][mo - 1] ?? ''} ${y}`;
+}
+
+// Events tagged long after they were published came from a backfill: their
+// notes quote the filings indexed on the processing date, not those in force
+// when the action came out.
+function addedLater(e) {
+  if (!e.processed_at || !e.published) return '';
+  const days = (Date.parse(e.processed_at) - Date.parse(e.published)) / 864e5;
+  return days > 14 ? ` · <span class="later">Added ${esc(e.processed_at.slice(0, 10))} using filings current then</span>` : '';
+}
+
 async function eventPage(env, id) {
-  const e = (await env.DB.prepare('SELECT id, title, url, published, category, agencies, abstract FROM events WHERE id = ?').bind(id).first());
+  const e = (await env.DB.prepare('SELECT id, title, url, published, category, agencies, abstract, processed_at FROM events WHERE id = ?').bind(id).first());
   if (!e) return null;
   const { results: notes } = await env.DB.prepare('SELECT ticker, company, summary, citations FROM notes WHERE event_id = ? ORDER BY ticker').bind(id).all();
   const full = { ...e, agencies: safeJson(e.agencies, []), notes: notes.map(n => ({ ...n, citations: safeJson(n.citations, []) })) };
@@ -73,7 +111,7 @@ function eventBlock(e, open = false) {
           </details>
         </li>`).join('')}</ul>`;
   return `<article>
-    <p class="meta">${esc(e.published)} · ${esc(e.category ?? '')}${e.agencies?.length ? ` · ${esc(e.agencies.join(', '))}` : ''}</p>
+    <p class="meta">${esc(e.published)} · ${esc(e.category ?? '')}${e.agencies?.length ? ` · ${esc(e.agencies.join(', '))}` : ''}${addedLater(e)}</p>
     <h2><a href="${BASE}/event/${encodeURIComponent(e.id)}">${esc(e.title)}</a></h2>
     ${e.abstract && open ? `<p>${esc(e.abstract)}</p>` : ''}
     <p class="src"><a href="${esc(e.url)}" rel="noopener">Federal Register ${esc(e.id)}</a></p>
@@ -117,6 +155,7 @@ blockquote{margin:8px 0;padding:10px 12px;background:var(--quote);border-left:3p
 blockquote footer{margin-top:6px}
 .scroll{overflow-x:auto}table{border-collapse:collapse;font-size:14px;width:100%}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--rule);vertical-align:top}th{font-weight:600}
 ol li,ul li{margin-bottom:6px}
+.months{margin-top:32px;border-top:1px solid var(--rule);padding-top:12px;font-size:14px;line-height:2}.later{font-style:italic}
 .notice{margin-top:40px;border-top:1px solid var(--rule);padding-top:12px;color:var(--muted);font-size:13px}
 </style></head><body><main>
 <header><a class="home" href="${BASE}">Reed</a><a href="/">Muscoota</a></header>
