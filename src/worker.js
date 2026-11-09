@@ -136,9 +136,9 @@ function method() {
 `, 'method');
 }
 
-const MARK = `<svg aria-hidden="true" viewBox="0 0 32 32"><g fill="none" stroke-width="1.5" stroke-linecap="round"><path stroke="currentColor" d="M6.7 5.4V10.6M9.3 5.4V10.6M5.4 14.7H10.6M5.4 17.3H10.6M6.7 21.4V26.6M9.3 21.4V26.6M13.4 6.7H18.6M13.4 9.3H18.6M14.7 13.4V18.6M17.3 13.4V18.6M13.4 22.7H18.6M13.4 25.3H18.6M22.7 5.4V10.6M25.3 5.4V10.6M22.7 21.4V26.6M25.3 21.4V26.6"/><path stroke="#CC785C" d="M21.4 14.7H26.6M21.4 17.3H26.6"/></g></svg>`;
+const MARK = `<svg aria-hidden="true" viewBox="0 0 32 32"><g fill="none" stroke-width="1.5" stroke-linecap="round"><path stroke="#191917" d="M6.7 5.4V10.6M9.3 5.4V10.6M5.4 14.7H10.6M5.4 17.3H10.6M6.7 21.4V26.6M9.3 21.4V26.6M13.4 6.7H18.6M13.4 9.3H18.6M14.7 13.4V18.6M17.3 13.4V18.6M13.4 22.7H18.6M13.4 25.3H18.6M22.7 5.4V10.6M25.3 5.4V10.6M22.7 21.4V26.6M25.3 21.4V26.6"/><path stroke="#CC785C" d="M21.4 14.7H26.6M21.4 17.3H26.6"/></g></svg>`;
 const FAVICON = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%23F3F0E8'/%3E%3Cg%20fill='none'%20stroke-width='1.5'%20stroke-linecap='round'%3E%3Cpath%20stroke='%23191917'%20d='M6.7%205.4V10.6M9.3%205.4V10.6M5.4%2014.7H10.6M5.4%2017.3H10.6M6.7%2021.4V26.6M9.3%2021.4V26.6M13.4%206.7H18.6M13.4%209.3H18.6M14.7%2013.4V18.6M17.3%2013.4V18.6M13.4%2022.7H18.6M13.4%2025.3H18.6M22.7%205.4V10.6M25.3%205.4V10.6M22.7%2021.4V26.6M25.3%2021.4V26.6'/%3E%3Cpath%20stroke='%23CC785C'%20d='M21.4%2014.7H26.6M21.4%2017.3H26.6'/%3E%3C/g%3E%3C/svg%3E";
-const NAV = [['events', '', 'Events'], ['method', '/method', 'How it works'], ['eval', '/eval', 'Results']];
+const NAV = [['events', '', 'Reed'], ['method', '/method', 'How it works'], ['eval', '/eval', 'Results']];
 
 // Every page shares the Muscoota site header, plus Reed's own section nav.
 // `active` is one of the NAV keys, or empty.
@@ -152,28 +152,25 @@ function layout(title, body, active = '') {
 <meta name="theme-color" content="#F3F0E8">
 <link rel="icon" href="${FAVICON}">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#F3F0E8;--fg:#191917;--fg2:#3D3B36;--muted:#7A766C;--rule:rgba(25,25,23,.12);--quote:#EAE6DB;--link:#2F6770;--accent:#CC785C;
---sans:'Geist',ui-sans-serif,system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;--mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace}
-@media (prefers-color-scheme:dark){:root{--bg:#191917;--fg:#F3F0E8;--fg2:#D6D2C8;--muted:#9A958A;--rule:rgba(243,240,232,.14);--quote:#23221F;--link:#8FC3CB}}
+:root{--bg:#F3F0E8;--fg:#191917;--fg2:#3D3B36;--muted:#6F6B61;--rule:rgba(25,25,23,.12);--quote:#EAE6DB;--link:#2F6B74;--accent:#CC785C;
+--sans:'Geist',ui-sans-serif,system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif}
 *{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
 a{color:var(--link)}
-.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px 28px;max-width:960px;margin:0 auto;padding:22px 16px 18px;border-bottom:1px solid var(--rule)}
-.crumb{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:500;letter-spacing:-.01em}
-.crumb a{color:var(--fg);text-decoration:none}.crumb .mark{display:inline-flex;align-items:center;gap:10px}.crumb svg{width:22px;height:22px}
-.crumb .sep{color:var(--muted);font-weight:300}
-.sub{display:flex;gap:22px;font-size:14px}.sub a{color:var(--fg2);text-decoration:none;padding:4px 0;border-bottom:1px solid transparent}
-.sub a:hover{border-color:var(--rule)}.sub a[aria-current]{color:var(--fg);border-color:var(--accent)}
-main{max-width:720px;margin:0 auto;padding:36px 16px 64px}
-h1{font-size:26px;font-weight:500;letter-spacing:-.015em;line-height:1.25;margin:0 0 10px}
+.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px 28px;padding:22px clamp(16px,5.5vw,88px)}
+.mark{display:inline-flex;align-items:center;gap:10px;color:var(--fg);text-decoration:none;font-size:15px;font-weight:500}.mark svg{width:22px;height:22px}
+.sub{display:flex;gap:24px;font-size:14px}.sub a{color:var(--fg2);text-decoration:none;padding-bottom:2px;border-bottom:1px solid transparent}
+.sub a:hover{border-color:var(--accent)}.sub a[aria-current]{color:var(--fg);border-color:var(--accent)}
+main{max-width:720px;margin:0 auto;padding:40px 16px 72px}
+h1{font-size:clamp(1.5rem,2.3vw,2rem);font-weight:500;line-height:1.25;margin:0 0 12px;text-wrap:balance}
 h2{font-size:18px;font-weight:500;margin:4px 0 6px;line-height:1.35}h2 a{color:var(--fg);text-decoration:none}h2 a:hover{text-decoration:underline}
 .lead{font-size:17px;color:var(--fg2)}.meta,.src,.none{color:var(--muted);font-size:14px}
-article{border-top:1px solid var(--rule);padding:20px 0}
+article{padding:28px 0 8px}
 ul.notes{list-style:none;padding:0;margin:12px 0 0}ul.notes>li{margin:0 0 14px}ul.notes p{margin:2px 0 4px}
-.tk{color:var(--muted);font:13px var(--mono);margin-left:4px}
+.tk{color:var(--muted);font-size:14px;margin-left:4px}
 details summary{cursor:pointer;color:var(--muted);font-size:14px}
-blockquote{margin:8px 0;padding:10px 12px;background:var(--quote);border-left:3px solid var(--rule);font-size:14px;overflow-wrap:anywhere}
+blockquote{margin:8px 0;padding:12px 14px;background:var(--quote);border-radius:3px;font-size:14px;overflow-wrap:anywhere}
 blockquote footer{margin-top:6px;color:var(--muted)}
 .scroll{overflow-x:auto}table{border-collapse:collapse;font-size:14px;width:100%}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--rule);vertical-align:top}th{font-weight:500}
 ol li,ul li{margin-bottom:6px}
@@ -184,20 +181,20 @@ figure{margin:24px 0}figure.wide{width:min(960px,calc(100vw - 32px));margin-left
 td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.ci{color:var(--muted);font-size:12px;margin-left:4px}
 tr.grp td{border-top:1px solid var(--muted)}sup{color:var(--muted);font-size:10px;margin-left:2px}
 .history li{font-size:14px}
-.months{margin-top:32px;border-top:1px solid var(--rule);padding-top:12px;font-size:14px;line-height:2}.later{font-style:italic}
-.foot{max-width:960px;margin:0 auto;padding:16px 16px 28px;border-top:1px solid var(--rule);display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;color:var(--muted);font-size:12px}
-.foot a{color:var(--muted)}
+.months{margin-top:48px;font-size:15px;line-height:2}.months h2{margin-bottom:4px}
+.foot{padding:0 clamp(16px,5.5vw,88px) 28px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;color:var(--muted);font-size:13px}
+.foot a{color:var(--fg2)}
 @media (max-width:600px){.sub{gap:18px;width:100%}}
 </style></head><body>
 <header class="top">
-<div class="crumb"><a class="mark" href="/" aria-label="Muscoota Ventures home">${MARK}<span>Muscoota Ventures</span></a><span class="sep">/</span><a href="${BASE}">Reed</a></div>
+<a class="mark" href="/" aria-label="Muscoota Ventures home">${MARK}<span>Muscoota Ventures</span></a>
 <nav class="sub" aria-label="Reed">${nav}</nav>
 </header>
 <main>
-${title === 'Reed' ? '' : `<h1>${esc(title)}</h1>`}
+<h1>${esc(title)}</h1>
 ${body}
 </main>
-<footer class="foot"><span>Research and education only. Not investment advice.</span><span class="mono"><a href="/">Muscoota Ventures</a> · <a href="https://github.com/aubrey-muscoota/reed">Source</a></span></footer>
+<footer class="foot"><span>Research and education only. Not investment advice.</span><span><a href="/#projects">More projects</a> &nbsp; <a href="https://github.com/aubrey-muscoota/reed">Source code</a></span></footer>
 </body></html>`;
 }
 

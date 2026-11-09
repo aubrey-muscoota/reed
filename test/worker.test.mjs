@@ -85,7 +85,7 @@ test('events processed within two weeks carry no backfill label', async () => {
 });
 
 test('every page links back to Muscoota and marks its section in the Reed nav', async () => {
-  const pages = { '/reed': 'Events', '/reed/method': 'How it works', '/reed/eval': 'Results', '/reed/month/2026-11': 'Events' };
+  const pages = { '/reed': 'Reed', '/reed/method': 'How it works', '/reed/eval': 'Results', '/reed/month/2026-11': 'Reed' };
   for (const [path, label] of Object.entries(pages)) {
     const body = await (await worker.fetch(new Request(`https://muscoota.com${path}`), env)).text();
     assert.ok(body.includes('href="/" aria-label="Muscoota Ventures home"'), path);
