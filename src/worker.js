@@ -136,8 +136,8 @@ function method() {
 `, 'method');
 }
 
-const MARK = `<svg aria-hidden="true" viewBox="0 0 32 32"><g fill="none" stroke-width="1.5" stroke-linecap="round"><path stroke="#191917" d="M6.7 5.4V10.6M9.3 5.4V10.6M5.4 14.7H10.6M5.4 17.3H10.6M6.7 21.4V26.6M9.3 21.4V26.6M13.4 6.7H18.6M13.4 9.3H18.6M14.7 13.4V18.6M17.3 13.4V18.6M13.4 22.7H18.6M13.4 25.3H18.6M22.7 5.4V10.6M25.3 5.4V10.6M22.7 21.4V26.6M25.3 21.4V26.6"/><path stroke="#CC785C" d="M21.4 14.7H26.6M21.4 17.3H26.6"/></g></svg>`;
-const FAVICON = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%23F3F0E8'/%3E%3Cg%20fill='none'%20stroke-width='1.5'%20stroke-linecap='round'%3E%3Cpath%20stroke='%23191917'%20d='M6.7%205.4V10.6M9.3%205.4V10.6M5.4%2014.7H10.6M5.4%2017.3H10.6M6.7%2021.4V26.6M9.3%2021.4V26.6M13.4%206.7H18.6M13.4%209.3H18.6M14.7%2013.4V18.6M17.3%2013.4V18.6M13.4%2022.7H18.6M13.4%2025.3H18.6M22.7%205.4V10.6M25.3%205.4V10.6M22.7%2021.4V26.6M25.3%2021.4V26.6'/%3E%3Cpath%20stroke='%23CC785C'%20d='M21.4%2014.7H26.6M21.4%2017.3H26.6'/%3E%3C/g%3E%3C/svg%3E";
+const MARK = `<svg aria-hidden="true" viewBox="0 0 32 32"><g fill="none" stroke-width="1.5" stroke-linecap="round"><path stroke="#0A0A0A" d="M6.7 5.4V10.6M9.3 5.4V10.6M5.4 14.7H10.6M5.4 17.3H10.6M6.7 21.4V26.6M9.3 21.4V26.6M13.4 6.7H18.6M13.4 9.3H18.6M14.7 13.4V18.6M17.3 13.4V18.6M13.4 22.7H18.6M13.4 25.3H18.6M22.7 5.4V10.6M25.3 5.4V10.6M22.7 21.4V26.6M25.3 21.4V26.6"/><path stroke="#1F3FFF" d="M21.4 14.7H26.6M21.4 17.3H26.6"/></g></svg>`;
+const FAVICON = "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%23FFFFFF'/%3E%3Cg%20fill='none'%20stroke-width='1.5'%20stroke-linecap='round'%3E%3Cpath%20stroke='%230A0A0A'%20d='M6.7%205.4V10.6M9.3%205.4V10.6M5.4%2014.7H10.6M5.4%2017.3H10.6M6.7%2021.4V26.6M9.3%2021.4V26.6M13.4%206.7H18.6M13.4%209.3H18.6M14.7%2013.4V18.6M17.3%2013.4V18.6M13.4%2022.7H18.6M13.4%2025.3H18.6M22.7%205.4V10.6M25.3%205.4V10.6M22.7%2021.4V26.6M25.3%2021.4V26.6'/%3E%3Cpath%20stroke='%231F3FFF'%20d='M21.4%2014.7H26.6M21.4%2017.3H26.6'/%3E%3C/g%3E%3C/svg%3E";
 const NAV = [['events', '', 'Reed'], ['method', '/method', 'How it works'], ['eval', '/eval', 'Results']];
 
 // Every page shares the Muscoota site header, plus Reed's own section nav.
@@ -149,13 +149,13 @@ function layout(title, body, active = '') {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}${title === 'Reed' ? ' · Muscoota Ventures' : ' · Reed'}</title>
 <meta name="description" content="Which companies' SEC filings describe exposure to new U.S. government actions. A Muscoota research project.">
-<meta name="theme-color" content="#F3F0E8">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="icon" href="${FAVICON}">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#F3F0E8;--fg:#191917;--fg2:#3D3B36;--muted:#6F6B61;--rule:rgba(25,25,23,.12);--quote:#EAE6DB;--link:#2F6B74;--accent:#CC785C;
---sans:'Geist',ui-sans-serif,system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif}
+:root{--bg:#FFFFFF;--fg:#0A0A0A;--fg2:#2B2B2B;--muted:#696969;--rule:rgba(10,10,10,.2);--quote:#F1F1F1;--link:#1F3FFF;--accent:#1F3FFF;
+--sans:'Schibsted Grotesk',ui-sans-serif,system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif}
 *{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
 a{color:var(--link)}
 .top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px 28px;padding:22px clamp(16px,5.5vw,88px)}
@@ -163,7 +163,7 @@ a{color:var(--link)}
 .sub{display:flex;gap:24px;font-size:14px}.sub a{color:var(--fg2);text-decoration:none;padding-bottom:2px;border-bottom:1px solid transparent}
 .sub a:hover{border-color:var(--accent)}.sub a[aria-current]{color:var(--fg);border-color:var(--accent)}
 main{max-width:720px;margin:0 auto;padding:40px 16px 72px}
-h1{font-size:clamp(1.5rem,2.3vw,2rem);font-weight:500;line-height:1.25;margin:0 0 12px;text-wrap:balance}
+h1{font-size:clamp(1.9rem,3.4vw,2.75rem);font-weight:700;line-height:1.08;margin:0 0 12px;text-wrap:balance}
 h2{font-size:18px;font-weight:500;margin:4px 0 6px;line-height:1.35}h2 a{color:var(--fg);text-decoration:none}h2 a:hover{text-decoration:underline}
 .lead{font-size:17px;color:var(--fg2)}.meta,.src,.none{color:var(--muted);font-size:14px}
 article{padding:28px 0 8px}
